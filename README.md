@@ -2,7 +2,7 @@
 Scrape Sentral data and use it!
 
 Sentralify was designed to be a replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** package developed by J-J-B-J and SuperHarmony910.
-Sentralify, can scrape data from the new Sentral frontend. So far, it can scrape:
+Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Timetable
  - Awards
  - Attendance
