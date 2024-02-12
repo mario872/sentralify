@@ -47,7 +47,7 @@ sentralify is quite simple from the user's perspective, all you have to do is ca
 If you want to understand in more detail how this works, then read on!
 
 ### sentralify()
-```sentralify()``` needs only 1 rgument but accepts 5. These five are ```config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True```; the last 4 are optional, and will all be ```True``` is not disabled. ```config``` is required, and accepts a python dictioary formatted as follows:
+```sentralify()``` needs only 1 argument but accepts 5. These five are ```config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True```; the last 4 are optional, and will all be ```True``` if not disabled. ```config``` is required, and accepts a python dictioary formatted as follows:
 
 ```
 config = {"username": "your_username",
