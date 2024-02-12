@@ -57,10 +57,10 @@ config = {"username": "your_username",
           "headless": False}
 ```
 
-```headless``` in the config, will dictate, whether a chromium window opens, or whether it does it all invisibly. ```timetable, notices, calendar``` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. ```persistent``` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cokkies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
+```headless``` in the config, will dictate, whether a chromium window opens, or whether it does it all invisibly. ```timetable, notices, calendar``` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. ```persistent``` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
 
 ### sentralify() return data
-sentralify's returns a lot of data! Below is a documentation of what it returns
+sentralify returns a lot of data! Below is a documentation of what it returns
 ##### Timetable
 The timetable that sentralify returns can be accessed by using ```sentralify(config)['timetable']```
 Below is the general structure of one day, in one week that timetable returns:
@@ -201,7 +201,7 @@ Below is an example of one notice that it returns:
 ]
 ```
 Yes, if you're the teacher that posted this who is reading this, then I can take it down if you want me to, no I will not bother asking for verification if it is really you, yes I will just make up a notice about school ending 5 weeks before the summer holidays, and this is definitely official.
-The general gist of how sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that added by teachers on Sentral. If you wanted to access the first notice's author, then you would run ```sentralify(config)['notices'][0]['author']```
+The general gist of how sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run ```sentralify(config)['notices'][0]['author']```
 
 #### Calendar
 The events from the school calendar that sentralify returns can be accessed by using ```sentralify(config)['calendar']```
@@ -218,7 +218,7 @@ Below is an example of one events that it returns:
 ````
 
 Yes, I'm tired of writing this dcoumentation, no I will not stop prematurely.
-The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's end, then you would run ```sentralify(config)['calendar'][0]['end']```. Please note that not allevens have the start and end fields filled out, as sometimes events just run all day instead.
+The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's end, then you would run ```sentralify(config)['calendar'][0]['end']```. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
 
 #### Student Details
 Okay, this one is not as structured as the others, because it's a big collection of other details about the student, so I'm just gonna copy-past my one over, and censor my personal details.
