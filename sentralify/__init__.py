@@ -19,6 +19,7 @@ along with this program.  If not, see https://www.gnu.org/licenses/gpl-3.0.html.
 # Imports
 
 from playwright.sync_api import sync_playwright
+import playwright
 import json
 import time
 
@@ -27,6 +28,7 @@ from sentralify.generators import generators
 
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
+
 
 def sentralify(config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True):
     """
@@ -46,7 +48,10 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     
     start = time.time() # So that we can know how long it took to scrape the Sentral data
     
-    p = sync_playwright().start() # Start a playwright instance
+    try:
+        p = sync_playwright().start() # Start a playwright instance
+    except playwright._impl._errors.Error:
+        pass
     
     # Initialise the generators and scrapers
     Sentral = generators
@@ -83,6 +88,7 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
         data['calendar'] = calendar
         
     browser.close() # Close the browser, as  our work is done
+    p.stop() # Stopping playwright instance
     
     data['time_elapsed'] = time.time() - start # Add how long it took to do all of that scraping and generating
     

@@ -77,6 +77,7 @@ class generators:
                         current_day['periods'][period]['room'] = None
                         current_day['periods'][period]['border_colour'] = None
                         current_day['periods'][period]['background_colour'] = None
+                        current_day['periods'][period]['teacher'] = None
                             
                     try: # We can try to get the start and end for the period, but sometimes, Sentral doesn't add that either!
                         current_day['periods'][period]['start'] = current_period['period_start_time']
@@ -217,11 +218,11 @@ class generators:
                    'activities': [],
                    'awards': []}
         
-        details['student_id'] = data['classes']['student_id']
+        details['student_id'] = int(data['classes']['student_id'])
         details['first_name'] = data['classes']['pref_name']
         details['surname'] = data['classes']['surname']
         details['name'] = details['first_name'] + ' ' + details['surname']
-        details['school_year'] = data['classes']['schoolYear']
+        details['school_year'] = int(data['classes']['schoolYear'])
         
         details['rollclass']['name'] = data['classes']['rollclass']['name']
         details['rollclass']['teacher'] = data['classes']['rollclass']['teacher']
