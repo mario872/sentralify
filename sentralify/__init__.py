@@ -22,8 +22,8 @@ from playwright.sync_api import sync_playwright
 import json
 import time
 
-from scrapers import scrapers
-from generators import generators
+from sentralify.scrapers import scrapers
+from sentralify.generators import generators
 
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)

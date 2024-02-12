@@ -1,6 +1,5 @@
-pytest-playwright
+playwright
 beautifulsoup4
 lxml
 markdownify
 python-dateutil
-termcolor
