@@ -42,5 +42,5 @@ Sentralify has plans to add lots more features, such as:
  - Downloading school photo of yourself
  - Generating barcode for use in library (idea from get-sentral)
 
-## Why does this not use get-sentral's license
+#### Why this doesn't use get-sentral's license
 I didn't use get-sentral's license, because although the idea for me to make this came from their archiving of get-sentral, I used no code from get-sentral, and implemented and researched all of the code myself. So, in my opinion this was made from the ground up, and I did not ['remix, transform, and build upon the material'](https://creativecommons.org/licenses/by-nc-sa/4.0/) provided by get-sentral.
