@@ -153,3 +153,4 @@ cython_debug/
 config.json
 contexts
 main.py
+.vscode/settings.json

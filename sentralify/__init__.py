@@ -23,12 +23,8 @@ import playwright
 import json
 import time
 
-from sentralify.scrapers import scrapers
-from sentralify.generators import generators
-
-with open('config.json', 'r') as config_file:
-    config = json.load(config_file)
-
+from .scrapers import scrapers
+from .generators import generators
 
 def sentralify(config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True):
     """
