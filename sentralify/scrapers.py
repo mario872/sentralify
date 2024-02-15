@@ -37,7 +37,34 @@ class scrapers:
         """
         
         self.config = config
+    
+    def check_login(self, browser):
+        page = browser.new_page()
         
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+        
+        page.get_by_label("Email or Username*").fill(self.config['username'])
+        page.get_by_label("Password*").fill(self.config['password'])
+        page.get_by_role("button", name="Log in").click()
+        
+        try:
+            expect(page).to_have_title('Portal Login', timeout=500)
+            return False
+        except AssertionError:
+            pass
+        
+        # Logging in using Microsoft account
+        page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
+        page.get_by_role("button", name="Next").click()
+        page.get_by_placeholder("Enter your password").fill(self.config['password'])
+        page.get_by_role("button", name="Sign in").click()
+        
+        try:
+            expect(page).not_to_have_title('Sign In', timeout=1000)
+            return True
+        except AssertionError:
+            return False
+    
     def login(self, browser):
         """
         Logs into the Sentral portal using the login info from the config.json file
@@ -53,7 +80,11 @@ class scrapers:
         
         page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
         
-        try: # If we have already signed in before, and the cookies ahven't expired, then we will be redirected to the portal page automatically
+        page.get_by_label("Email or Username*").fill(self.config['username'])
+        page.get_by_label("Password*").fill(self.config['password'])
+        page.get_by_role("button", name="Log in").click()
+        
+        try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
             expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"))
             return page
         except AssertionError: # Okay, we haven't logged in recently enough
@@ -70,7 +101,7 @@ class scrapers:
         except AssertionError: # Okay, never mind we do have to
             pass
         
-        # Loggin in using Microsoft account
+        # Logging in using Microsoft account
         page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
         page.get_by_role("button", name="Next").click()
         page.get_by_placeholder("Enter your password").fill(self.config['password'])

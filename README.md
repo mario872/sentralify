@@ -47,7 +47,7 @@ sentralify is quite simple from the user's perspective, all you have to do is ca
 If you want to understand in more detail how this works, then read on!
 
 ### sentralify()
-```sentralify()``` needs only 1 argument but accepts 5. These five are ```config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True```; the last 4 are optional, and will all be ```True``` if not disabled. ```config``` is required, and accepts a python dictioary formatted as follows:
+```sentralify()``` needs only 1 argument but accepts 6. These five are ```config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True```; the last 5 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. ```config``` is required, and accepts a python dictioary formatted as follows:
 
 ```
 config = {"username": "your_username",
@@ -59,8 +59,11 @@ config = {"username": "your_username",
 
 ```headless``` in the config, will dictate, whether a chromium window opens, or whether it does it all invisibly. ```timetable, notices, calendar``` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. ```persistent``` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
 
+```check_login``` added in v1.1.0 is used to check the user's login, ie. check if they spelled their password and email correctly, if used, it will return a value of ```True``` or ```False```.
+
 ### sentralify() return data
 sentralify returns a lot of data! Below is a documentation of what it returns
+
 ##### Timetable
 The timetable that sentralify returns can be accessed by using ```sentralify(config)['timetable']```
 Below is the general structure of one day, in one week that timetable returns:
