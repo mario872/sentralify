@@ -22,6 +22,7 @@ import json
 import re
 from playwright.sync_api import expect
 from bs4 import BeautifulSoup
+import time
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Main scrapers class
@@ -41,14 +42,19 @@ class scrapers:
     def check_login(self, browser):
         page = browser.new_page()
         
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+        try:
+            page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+        except Exception as e:
+            print(Exception)
+            return False
         
         page.get_by_label("Email or Username*").fill(self.config['username'])
         page.get_by_label("Password*").fill(self.config['password'])
         page.get_by_role("button", name="Log in").click()
         
         try:
-            expect(page).to_have_title('Portal Login', timeout=500)
+            expect(page).to_have_title('Portal Login', timeout=1000)
+            print('After portal login')
             return False
         except AssertionError:
             pass
@@ -56,6 +62,14 @@ class scrapers:
         # Logging in using Microsoft account
         page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
         page.get_by_role("button", name="Next").click()
+        
+        page.wait_for_timeout(5000)
+        
+        try:
+            expect(page).not_to_have_title(re.compile('Sign in to your account'), timeout=5000)
+        except AssertionError:
+            return False
+        
         page.get_by_placeholder("Enter your password").fill(self.config['password'])
         page.get_by_role("button", name="Sign in").click()
         

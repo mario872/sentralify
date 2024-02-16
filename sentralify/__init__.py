@@ -37,7 +37,7 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
         calendar (bool = True): Whether or not to scrape the calendar
         student_details (bool = True): Whether or not to scrape the student details
         persistent (bool = True): Whether or not to make the browser instance consistent pros: makes logging in faster, cons: stores data on computer
-        check_login (bool = True): Used to check only if login is valid, returns True, not dict
+        check_login (bool = True): Used to check only if login is valid, returns bool, not dict
 
     Returns:
         dict: A dictionary with the timetable, notices, calendar, student details, and the amount of time it took to gather the data
@@ -62,7 +62,10 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
         browser = p.chromium.launch(headless=config['headless'])
     
     if check_login:
-        return scraper.check_login(browser)
+        value = scraper.check_login(browser)
+        browser.close()
+        p.stop()
+        return value
     
     page = scraper.login(browser) # Login to Sentral
     
