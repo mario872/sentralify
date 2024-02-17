@@ -99,18 +99,13 @@ class scrapers:
         page.get_by_role("button", name="Log in").click()
         
         try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
-            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"))
+            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
             return page
         except AssertionError: # Okay, we haven't logged in recently enough
             pass
         
-        # Logs into main Sentral v2 portal login page
-        page.get_by_label("Email or Username*").fill(self.config['username'])
-        page.get_by_label("Password*").fill(self.config['password'])
-        page.get_by_role("button", name="Log in").click()
-        
         try: # Hey, maybe we won't have to use a microsoft login at least?
-            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"))
+            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
             return page
         except AssertionError: # Okay, never mind we do have to
             pass
@@ -123,7 +118,7 @@ class scrapers:
         page.get_by_role("button", name="No").click()
         
         try: # We expect that we will be logged into Sentral by now
-            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"))
+            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=3000)
         except AssertionError: # But sometimes, Sentral decides that EVEN A MICROSOFT ACCOUNT isn't enough veriication, and we have to log in again!
             expect(page).to_have_title(re.compile('Portal - Login'))
             page.get_by_label("Email or Username*").fill(self.config['username'])
@@ -131,7 +126,7 @@ class scrapers:
             page.get_by_role("button", name="Log in").click()
             
         return page
-
+    
     def save_student_details(self, page):
         """
         Goes to the student details page after login, to get the student id for the timetable,
