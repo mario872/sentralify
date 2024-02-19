@@ -56,7 +56,7 @@ class generators:
                     if current_day['date'].day == datetime.now().day and current_day['date'].month == datetime.now().month:
                         current_period = daily_timetable[period]
                         current_day['is_today'] = True
-                    else: # Otherwise, ujst draw from the cyclical timetable's data
+                    else: # Otherwise, just draw from the cyclical timetable's data
                         current_period = data[week]['periods'][period]['days'][str(day + 1)]
                         current_day['is_today'] = False
                     
@@ -85,7 +85,9 @@ class generators:
                     except KeyError:
                         current_day['periods'][period]['start'] = None
                         current_day['periods'][period]['end'] = None
-
+                
+                current_day['date'] = current_day['date'].strftime('%c')
+                
                 timetable.append(current_day) # Add all of today's periods to the timetable
                     
         return timetable
@@ -130,7 +132,7 @@ class generators:
                 text = 'This message has no content.'
                 
             notices.append({'title': title,
-                            'date': datetime(day=int(date_posted[0]), month=int(date_posted[1]), year=int(date_posted[2])),
+                            'date': datetime(day=int(date_posted[0]), month=int(date_posted[1]), year=int(date_posted[2])).strftime('%c'),
                             'author': posted_by,
                             'content': text})
             
@@ -158,9 +160,9 @@ class generators:
             date = day.find('div', class_='calendar-cell-date').text.strip()
             
             try: # We try to set the date, but because Fabruary 29th isn't a real day apparently, this accounts for that
-                date = datetime(day=datetime.strptime(date, '%b %d').day, month=datetime.strptime(date, '%b %d').month, year=datetime.now().year)
+                date = datetime(day=datetime.strptime(date, '%b %d').day, month=datetime.strptime(date, '%b %d').month, year=datetime.now().year).strftime('%c')
             except ValueError:
-                date = datetime(day=29, month=2, year=datetime.now().year)
+                date = datetime(day=29, month=2, year=datetime.now().year).strftime('%c')
                 
             day = day.find_all('div', class_=['btn-small', 'event'])
             
@@ -177,11 +179,13 @@ class generators:
                     start = start.replace(day=date.day)
                     start = start.replace(month=date.month)
                     start = start.replace(year = datetime.now().year)
-
+                    start = start.strftime('%c')
+                    
                     end = parse(time.split(' - ')[1])
                     end = end.replace(day=date.day)
                     end = end.replace(month=date.month)
                     end = end.replace(year=datetime.now().year)
+                    end = end.strftime('%c')
                                         
                 except Exception as e: # Sometimes there is no specific time for an event, so just set it to none
                     start = None
