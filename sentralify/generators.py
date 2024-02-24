@@ -244,10 +244,10 @@ class generators:
         for activity in range(len(data['activities'])):
             activity_details = data['activities'][activity]
             details['activities'].append({'name': activity_details['name'],
-                                          'start_date': parse(activity_details['start_date']),
-                                          'end_date': parse(activity_details['end_date']),
-                                          'start_time': parse(f"{activity_details['start_date']}-{activity_details['start_time']}"),
-                                          'end_time': parse(f"{activity_details['end_date']}-{activity_details['end_time']}"),
+                                          'start_date': parse(activity_details['start_date']).strftime('%c'),
+                                          'end_date': parse(activity_details['end_date']).strftime('%c'),
+                                          'start_time': parse(f"{activity_details['start_date']}-{activity_details['start_time']}").strftime('%c'),
+                                          'end_time': parse(f"{activity_details['end_date']}-{activity_details['end_time']}").strftime('%c'),
                                           'points': activity_details['points'],
                                           'description': activity_details['description'],
                                           'category': activity_details['category']})

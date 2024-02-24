@@ -110,9 +110,20 @@ class scrapers:
         except AssertionError: # Okay, never mind we do have to
             pass
         
+        found_email_address = False
+        
+        try:
+            expect(page.get_by_text(re.compile(f'{self.config["username"].split(".")[0].capitalize()}.{self.config["username"].split(".")[1].capitalize()}@education.{self.config["state"]}.gov.au'))).to_be_visible(timeout=3000)
+            print('FOUND IT!')
+            page.click(f'text={self.config["username"].split(".")[0]}.{self.config["username"].split(".")[1]}@education.{self.config["state"]}.gov.au')
+            found_email_address = True
+        except AssertionError:
+            pass
+        
         # Logging in using Microsoft account
-        page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
-        page.get_by_role("button", name="Next").click()
+        if not found_email_address:
+            page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
+            page.get_by_role("button", name="Next").click()
         page.get_by_placeholder("Enter your password").fill(self.config['password'])
         page.get_by_role("button", name="Sign in").click()
         page.get_by_role("button", name="No").click()
@@ -120,11 +131,15 @@ class scrapers:
         try: # We expect that we will be logged into Sentral by now
             expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=3000)
         except AssertionError: # But sometimes, Sentral decides that EVEN A MICROSOFT ACCOUNT isn't enough veriication, and we have to log in again!
-            expect(page).to_have_title(re.compile('Portal - Login'))
-            page.get_by_label("Email or Username*").fill(self.config['username'])
-            page.get_by_label("Password*").fill(self.config['password'])
-            page.get_by_role("button", name="Log in").click()
-            
+            try:
+                expect(page).to_have_title(re.compile('Portal - Login'))
+                page.get_by_label("Email or Username*").fill(self.config['username'])
+                page.get_by_label("Password*").fill(self.config['password'])
+                page.get_by_role("button", name="Log in").click()
+            except AssertionError:
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=3000)
+
+                
         return page
     
     def save_student_details(self, page):
