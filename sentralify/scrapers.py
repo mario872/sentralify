@@ -40,44 +40,54 @@ class scrapers:
         self.config = config
     
     def check_login(self, browser):
-        page = browser.new_page()
         
         try:
-            page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+        
+            page = browser.new_page()
+            
+            try:
+                page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+            except Exception as e:
+                print(Exception)
+                return False
+            
+            page.get_by_label("Email or Username*").fill(self.config['username'])
+            page.get_by_label("Password*").fill(self.config['password'])
+            page.get_by_role("button", name="Log in").click()
+            
+            try:
+                expect(page).to_have_title('Portal Login', timeout=1000)
+                print('After portal login')
+                return False
+            except AssertionError:
+                pass
+            
+            # Logging in using Microsoft account
+            page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
+            page.get_by_role("button", name="Next").click()
+            
+            page.wait_for_timeout(5000)
+            
+            try:
+                expect(page).not_to_have_title(re.compile('Sign in to your account'), timeout=5000)
+            except AssertionError:
+                return False
+            
+            page.get_by_placeholder("Enter your password").fill(self.config['password'])
+            page.get_by_role("button", name="Sign in").click()
+            
+            try:
+                expect(page).not_to_have_title('Sign In', timeout=1000)
+                return True
+            except AssertionError:
+                return False
+
         except Exception as e:
-            print(Exception)
-            return False
-        
-        page.get_by_label("Email or Username*").fill(self.config['username'])
-        page.get_by_label("Password*").fill(self.config['password'])
-        page.get_by_role("button", name="Log in").click()
-        
-        try:
-            expect(page).to_have_title('Portal Login', timeout=1000)
-            print('After portal login')
-            return False
-        except AssertionError:
-            pass
-        
-        # Logging in using Microsoft account
-        page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
-        page.get_by_role("button", name="Next").click()
-        
-        page.wait_for_timeout(5000)
-        
-        try:
-            expect(page).not_to_have_title(re.compile('Sign in to your account'), timeout=5000)
-        except AssertionError:
-            return False
-        
-        page.get_by_placeholder("Enter your password").fill(self.config['password'])
-        page.get_by_role("button", name="Sign in").click()
-        
-        try:
-            expect(page).not_to_have_title('Sign In', timeout=1000)
-            return True
-        except AssertionError:
-            return False
+            print('Uhoh! There\'s an error!')
+            print(e)
+            print(page.title)
+            print(page.content())
+            exit()
     
     def login(self, browser):
         """
@@ -90,57 +100,66 @@ class scrapers:
             playwright page: The current page / tab object the playwright is working in, for continuity between functions
         """
         
-        page = browser.new_page()
-        
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
-        
-        try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
-            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
-            return page
-        except AssertionError: # Okay, we haven't logged in recently enough
-            pass
-        
-        page.get_by_label("Email or Username*").fill(self.config['username'])
-        page.get_by_label("Password*").fill(self.config['password'])
-        page.get_by_role("button", name="Log in").click()
-        
-        try: # Hey, maybe we won't have to use a microsoft login at least?
-            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
-            return page
-        except AssertionError: # Okay, never mind we do have to
-            pass
-        
-        found_email_address = False
-        
         try:
-            expect(page.get_by_text(re.compile(f'{self.config["username"].split(".")[0].capitalize()}.{self.config["username"].split(".")[1].capitalize()}@education.{self.config["state"]}.gov.au'))).to_be_visible(timeout=3000)
-            print('FOUND IT!')
-            page.click(f'text={self.config["username"].split(".")[0]}.{self.config["username"].split(".")[1]}@education.{self.config["state"]}.gov.au')
-            found_email_address = True
-        except AssertionError:
-            pass
         
-        # Logging in using Microsoft account
-        if not found_email_address:
-            page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
-            page.get_by_role("button", name="Next").click()
-        page.get_by_placeholder("Enter your password").fill(self.config['password'])
-        page.get_by_role("button", name="Sign in").click()
-        page.get_by_role("button", name="No").click()
-        
-        try: # We expect that we will be logged into Sentral by now
-            expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=3000)
-        except AssertionError: # But sometimes, Sentral decides that EVEN A MICROSOFT ACCOUNT isn't enough veriication, and we have to log in again!
+            page = browser.new_page()
+            
+            page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+            
+            try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
+                return page
+            except AssertionError: # Okay, we haven't logged in recently enough
+                pass
+            
+            page.get_by_label("Email or Username*").fill(self.config['username'])
+            page.get_by_label("Password*").fill(self.config['password'])
+            page.get_by_role("button", name="Log in").click()
+            
+            try: # Hey, maybe we won't have to use a microsoft login at least?
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
+                return page
+            except AssertionError: # Okay, never mind we do have to
+                pass
+            
+            found_email_address = False
+            
             try:
-                expect(page).to_have_title(re.compile('Portal - Login'))
-                page.get_by_label("Email or Username*").fill(self.config['username'])
-                page.get_by_label("Password*").fill(self.config['password'])
-                page.get_by_role("button", name="Log in").click()
+                expect(page.get_by_text(re.compile(f'{self.config["username"].split(".")[0].capitalize()}.{self.config["username"].split(".")[1].capitalize()}@education.{self.config["state"]}.gov.au'))).to_be_visible(timeout=3000)
+                print('FOUND IT!')
+                page.click(f'text={self.config["username"].split(".")[0]}.{self.config["username"].split(".")[1]}@education.{self.config["state"]}.gov.au')
+                found_email_address = True
             except AssertionError:
+                pass
+            
+            # Logging in using Microsoft account
+            if not found_email_address:
+                page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
+                page.get_by_role("button", name="Next").click()
+            page.get_by_placeholder("Enter your password").fill(self.config['password'])
+            page.get_by_role("button", name="Sign in").click()
+            page.get_by_role("button", name="No").click()
+            
+            try: # We expect that we will be logged into Sentral by now
                 expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=3000)
+            except AssertionError: # But sometimes, Sentral decides that EVEN A MICROSOFT ACCOUNT isn't enough veriication, and we have to log in again!
+                try:
+                    expect(page).to_have_title(re.compile('Portal - Login'))
+                    page.get_by_label("Email or Username*").fill(self.config['username'])
+                    page.get_by_label("Password*").fill(self.config['password'])
+                    page.get_by_role("button", name="Log in").click()
+                except AssertionError:
+                    expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=3000)
 
-                
-        return page
+                    
+            return page
+        
+        except Exception as e:
+            print('Uhoh! There\'s an error!')
+            print(e)
+            print(page.title)
+            print(page.content())
+            exit()
     
     def save_student_details(self, page):
         """
