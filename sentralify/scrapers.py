@@ -83,7 +83,7 @@ class scrapers:
                 return False
 
         except Exception as e:
-            print('Uhoh! There\'s an error!')
+            print('Uhoh! There\'s an error in check_login!')
             print(e)
             print(page.title)
             print(page.content())
@@ -107,7 +107,7 @@ class scrapers:
             page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
             
             try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
-                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()} {self.config['username'].split('.')[1].upper()}"), timeout=1000)
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}"), timeout=1000)
                 return page
             except AssertionError: # Okay, we haven't logged in recently enough
                 pass
@@ -155,7 +155,7 @@ class scrapers:
             return page
         
         except Exception as e:
-            print('Uhoh! There\'s an error!')
+            print('Uhoh! There\'s an error in login!')
             print(e)
             print(page.title)
             print(page.content())
