@@ -242,6 +242,7 @@ class scrapers:
         page.get_by_role("button", name="Filter").click()
         page.get_by_text('Title Published after').click()
         page.get_by_role("button", name="Today").click()
+        page.wait_for_timeout(500)
         return page.content()
     
     def save_calendar(self, page):
