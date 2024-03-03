@@ -125,17 +125,17 @@ class scrapers:
             found_email_address = False
             
             try:
-                expect(page.get_by_text(re.compile(f'{self.config["username"].split(".")[0].capitalize()}.{self.config["username"].split(".")[1].capitalize()}@education.{self.config["state"]}.gov.au'))).to_be_visible(timeout=3000)
-                print('FOUND IT!')
-                page.click(f'text={self.config["username"].split(".")[0]}.{self.config["username"].split(".")[1]}@education.{self.config["state"]}.gov.au')
+                expect(page.get_by_text(re.compile(f'{self.config["username"]}', re.IGNORECASE))).to_be_visible(timeout=3000)
+                page.get_by_text(re.compile(f'{self.config["username"]}', re.IGNORECASE)).click()
                 found_email_address = True
             except AssertionError:
                 pass
             
             # Logging in using Microsoft account
             if not found_email_address:
-                page.get_by_placeholder("Use your email address").fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
+                page.get_by_placeholder(re.compile("Use your email address")).fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
                 page.get_by_role("button", name="Next").click()
+                
             page.get_by_placeholder("Enter your password").fill(self.config['password'])
             page.get_by_role("button", name="Sign in").click()
             page.get_by_role("button", name="No").click()
