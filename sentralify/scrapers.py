@@ -155,11 +155,15 @@ class scrapers:
             return page
         
         except Exception as e:
-            print('Uhoh! There\'s an error in login!')
-            print(e)
-            print(page.title)
-            print(page.content())
-            exit()
+            try:
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]}", re.IGNORECASE), timeout=1000)
+                return page
+            except AssertionError:
+                print('Uhoh! There\'s an error in login!')
+                print(e)
+                print(page.title)
+                print(page.content())
+                exit()
     
     def save_student_details(self, page):
         """
