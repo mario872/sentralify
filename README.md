@@ -1,7 +1,7 @@
 # sentralify
 Scrape Sentral data and use it!
 
-Sentralify was designed to be a replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** package developed by J-J-B-J and SuperHarmony910.
+Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** package developed by J-J-B-J and SuperHarmony910.
 Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Timetable
  - Awards
@@ -10,6 +10,7 @@ Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Notices
  - Calendar
  - Classes
+ - Student Details such as name, student id etc.
 
 A quick sample to feed your coding addicted brain, so you can get started quickly:
 
@@ -32,22 +33,21 @@ print(f"Student Details (awards, attendance, classes etc): {data['student_detail
 print(f"It took: {data['time_elapsed']} seconds to scrape that data from Sentral, and format it!")
 ```
 
-This is rather impressive, and if you want to know more about how to use it, then you can visit the docs when they've been written.
+This is rather impressive, and if you want to know more about how to use it, then you can have a look at the documentation below.
 
 Sentralify has plans to add lots more features, such as:
  - Incidents scraping
  - Downloading reports
  - Downloading attachments from notices and activities
  - Downloading files from the school resources page
- - Downloading school photo of yourself
  - Generating barcode for use in library (idea from get-sentral)
 
-## Docs
+## Documentation
 sentralify is quite simple from the user's perspective, all you have to do is call ```sentralify(config)```, and it will magically scrape sentral for you and give you all the data you could ever want.
 If you want to understand in more detail how this works, then read on!
 
 ### sentralify()
-```sentralify()``` needs only 1 argument but accepts 6. These five are ```config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True```; the last 5 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. ```config``` is required, and accepts a python dictioary formatted as follows:
+```sentralify()``` needs only 1 argument but accepts a total of 6. These arguments are ```config, timetable, notices, calendar, persistent, check_login```; the last 5 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. ```config``` is required, and accepts a python dictioary formatted as follows:
 
 ```
 config = {"username": "your_username",
@@ -70,7 +70,7 @@ Below is the general structure of one day, in one week that timetable returns:
 ```
 [
     {
-        "date": datetime.datetime(2024, 2, 12, 0, 0),
+        "date": "Mon Feb 12 00:00:00 2024",
         "periods": [
             {
                 "full_name": None,
@@ -197,7 +197,7 @@ Below is an example of one notice that it returns:
 [
     {
         'title': 'Volleyball Team Trials',
-        'date': datetime.datetime(2024, 2, 12, 0, 0),
+        'date': "Mon Feb 12 00:00:00 2024",
         'author': 'teacher_name',
         'content': 'Any students interested in trialing for the Open Boys or the Open Girls Volleyball Teams, can you please register your name outside the B Block staffroom.\xa0  \n  \nThe Open Boys Trial will be held Monday 19/2/24, prior to school starting at 7:15 am. Doors will be closed at 7:30 so please be prompt.  \n  \nThe Open Girls will be held Monday 19/2/24, after school until 4:30 pm.\xa0  \n  \nIf you are interested but cannot attend the trial sessions please indicate on the sign on sheet.  \n  \nThere will also be beginner/development squads running in the near future. If you are interested please sign on the beginner squad register.\n\n'
     }
@@ -212,16 +212,16 @@ Below is an example of one events that it returns:
 ```
 [
     {
-        'title': 'Events: 12.30-1.45pm - Yr 11 Life Ready - Butterfly - Gym (teacher_name)',
-        'start': datetime.datetime(2024, 2, 21, 12, 30),
-        'end': datetime.datetime(2024, 2, 21, 13, 45),
-        'date': datetime.datetime(2024, 2, 21, 0, 0)
+        "title": "Events: All Day - Duke of Ed Qualifying AJ - Camp Coutts (McCann)",
+        "start": None,
+        "end": None,
+        "date": "Wed Apr 10 00:00:00 2024",
     }
 ]
-````
+```
 
 Yes, I'm tired of writing this dcoumentation, no I will not stop prematurely.
-The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's end, then you would run ```sentralify(config)['calendar'][0]['end']```. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
+The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's date, then you would run ```sentralify(config)['calendar'][0]['date']```. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
 
 #### Student Details
 Okay, this one is not as structured as the others, because it's a big collection of other details about the student, so I'm just gonna copy-past my one over, and censor my personal details.
@@ -246,7 +246,8 @@ Okay, this one is not as structured as the others, because it's a big collection
         {"name": "13SCIY", "subject": None, "teacher": "this_teacher_is_also_pretty_cool"},
         {"name": "Bowling01", "subject": None, "teacher": None},
     ],
-    "attendance": {"terms": {"1": 100, "2": 0, "3": 0, "4": 0}, "overall": 100},
+    "attendance": None, # See the snippet after this explainer
+    "attendance_percent": [97, 0, 0, 0],
     "activities": [
         {
             "name": "Year 13 Art Gallery NSW",
@@ -259,12 +260,30 @@ Okay, this one is not as structured as the others, because it's a big collection
             "category": "Excursion / Incursion Request",
         }
     ],
-    "awards": [{"total": "0", "terms": {1: "0", 2: "0", 3: "0", 4: "0"}}],
+    "awards": [{"total": "0", "terms": {1: "1", 2: "0", 3: "0", 4: "0"}}],
 }
 
 ```
 Yes I'm doing Bowling for sport, yes all my friends are doing it too, yes, I'm a coder, so no, I do not like doing proper sport.
 This is a lot of data, but having it nicely formatted and laid out here, should make it easier to understand. If I wanted to access the third class's teacher, then I would use ```sentralify(config)['student_details']['classes'][2]['teacher']```
+
+#### Attendance
+Okay, the attendance is really long, but I did it for you, you're welcome!
+Below is a small snippet of one day of data
+```
+[
+    [
+        [
+            {
+                "date": "Mon Jan 29 00:00:00 2024",
+                "status": "holiday",
+                "description": "Public Holiday",
+            }
+        ]
+    ]
+]
+```
+To get the your attendance status on the first day of the school year, you would call ```sentralify(config)['student_details']['attendance'][0][0][0]['status']```. The three zeros are the term, the week number in the term, and the day of the week.
 
 ### That's all folks!
 That's all of my documentation for now, I think I've covered everything, now it's up to you to take this project places!

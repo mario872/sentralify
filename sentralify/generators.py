@@ -237,9 +237,25 @@ class generators:
             details['classes'].append({'name': class_details['name'],
                                        'subject': class_details['subject'],
                                        'teacher': class_details['teacher']})
-   
-        details['attendance'] = data['attendance'] # The attendance is so well formatted already, that we just dupllicate it ointo the details
         
+        # We need to reformat the attendance data so that it is easier to use pythonically
+        details['attendance'] = []
+        for term in range(4):
+            details['attendance'].append([])
+            for week in range(len(data['attendance'][str(term+1)].keys())):
+                details['attendance'][term].append([]) # Check 3
+                for day in range(len(data['attendance'][str(term+1)][str(week+1)].keys())): # For some reason, they chose to make the backend start from 1 instead of 0.
+                    details['attendance'][term][week].append({'date': None, 'status': None, 'description': None})
+                    details['attendance'][term][week][day]['date'] = parse(data['attendance'][str(term+1)][str(week+1)][list(data['attendance'][str(term+1)][str(week+1)].keys())[day]]['date']).strftime('%c')
+                    details['attendance'][term][week][day]['status'] = data['attendance'][str(term+1)][str(week+1)][list(data['attendance'][str(term+1)][str(week+1)].keys())[day]]['status']
+                    try: # Future dates don't have a description
+                        details['attendance'][term][week][day]['description'] = data['attendance'][str(term+1)][str(week+1)][list(data['attendance'][str(term+1)][str(week+1)].keys())[day]]['description']
+                    except KeyError:
+                        details['attendance'][term][week][day]['description'] = None
+        
+        # A quick reformatting of the attendance percentages so that it is easier to use pythonically
+        details['attendance_percent'] = [data['attendance_percent']['terms']['1'], data['attendance_percent']['terms']['2'], data['attendance_percent']['terms']['3'], data['attendance_percent']['terms']['4']]
+
         # Gets all the activities the user is a part of and formats it and puts it in the details
         for activity in range(len(data['activities'])):
             activity_details = data['activities'][activity]

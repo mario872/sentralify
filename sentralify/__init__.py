@@ -35,8 +35,7 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
         timetable (bool = True): Whether or not to scrape the timetable
         notices (bool = True): Whether or not to scrape the notices
         calendar (bool = True): Whether or not to scrape the calendar
-        student_details (bool = True): Whether or not to scrape the student details
-        persistent (bool = True): Whether or not to make the browser instance consistent pros: makes logging in faster, cons: stores data on computer
+       persistent (bool = True): Whether or not to make the browser instance consistent pros: makes logging in faster, cons: stores data on computer
         check_login (bool = True): Used to check only if login is valid, returns bool, not dict
 
     Returns:

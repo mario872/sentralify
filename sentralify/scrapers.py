@@ -186,8 +186,12 @@ class scrapers:
         classes = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         # Student's attendance record
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/attendance?action=getStudentTermAttendance&student_id={str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/attendance?action=getStudentHeatmapData&student_id={str(self.student_id)}")
         attendance = json.loads(BeautifulSoup(page.content(), "lxml").text)
+        
+        # Student's Attendaance Percent
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/attendance?action=getStudentTermAttendance&student_id={str(self.student_id)}")
+        attendance_percent = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         #Student's daily timetable
         page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/timetable/getDailyTimetable/{str(self.student_id)}")
@@ -203,6 +207,7 @@ class scrapers:
         
         return {'classes': classes,
                 'attendance': attendance,
+                'attendance_percent': attendance_percent,
                 'daily_timetable': daily_timetable,
                 'activities': activites,
                 'awards': awards}
