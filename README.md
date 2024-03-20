@@ -268,7 +268,7 @@ Yes I'm doing Bowling for sport, yes all my friends are doing it too, yes, I'm a
 This is a lot of data, but having it nicely formatted and laid out here, should make it easier to understand. If I wanted to access the third class's teacher, then I would use ```sentralify(config)['student_details']['classes'][2]['teacher']```
 
 #### Attendance
-Okay, the attendance is really long, but I did it for you, you're welcome!
+Okay, the attendance (added in v1.2.0) is really long, but I did it for you, you're welcome!
 Below is a small snippet of one day of data
 ```
 [
