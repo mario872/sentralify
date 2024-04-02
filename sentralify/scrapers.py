@@ -234,7 +234,7 @@ class scrapers:
         # Anyway, this just scrapes the page for the json, and converts it to a dictionary that python can acess.
         # I found this url after watching some kids at my school go into the network tab in dev tools in Chrome, and look at what Sentral was accessing. Thank you!
         
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/timetable/getFullTimetable/{str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/timetable/getFullTimetableInDates/student_id_here/{str(self.student_id)}")
         return json.loads(BeautifulSoup(page.content(), "lxml").text)
 
     def save_notices(self, page):
