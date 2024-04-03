@@ -28,7 +28,7 @@ from markdownify import MarkdownConverter
 # Main generators class
 
 class generators:
-    def generate_timetable(data: list, daily_timetable: list):
+    def generate_timetable(data: list):
         """
         Takes a list of the JSON data scraped from the backend timetable page and moulds it
         into a nice Python dictionary with only the information that is needed for most applications
@@ -45,51 +45,68 @@ class generators:
         # use this url instead: https://base_rul_here.sentral.com.au/s-Y7eXkn/portal2/timetable/getFullTimetableInDates/student_id_here/undefined/true
         # It's a much better formatted version of the timetable
         
+        
         timetable = [] # This will store the timetable days and periods
         for week in range(2): # Two weeks are returned by the JSON
             for day in range(5): # Only five days in a school week, not seven!
-                current_day = {'date': datetime.strptime(data[week]['dates'][day]['date_name'], '%Y-%m-%d'), 'periods': [], 'is_today': None} # The variable for this iteration of the loop
+                timetable.append({}) # Add the new day to the timetable
                 
-                for period in range(11): # There are eleven periods in every day, because of before school, recess, period 2-3 break, lunch 1, lunch 2, and after school.
-                    current_day['periods'].append({}) # Add a blank space for this period in the list
-                    # If the current period is today, then draw from the daily timetble instead of the cyclical timetable
-                    if current_day['date'].day == datetime.now().day and current_day['date'].month == datetime.now().month:
-                        current_period = daily_timetable[period]
-                        current_day['is_today'] = True
-                    else: # Otherwise, just draw from the cyclical timetable's data
-                        current_period = data[week]['periods'][period]['days'][str(day + 1)]
-                        current_day['is_today'] = False
+                # This is to add five days onto the day loop number for week B
+                if week == 0:
+                    timetable_day = day
+                else:
+                    timetable_day = day + 5
                     
-                    try: # Because period 0, recess, etc. don't have lessons, we get an IndexError when trying to access them
-                        current_day['periods'][period]['full_name'] = current_period['lessons'][0]['subject_name']
-                        current_day['periods'][period]['name'] = current_period['lessons'][0]['lesson_class_name']
-                        try: # If there are no teachers (or room), then we get a KeyError instead
-                            current_day['periods'][period]['room'] = current_period['lessons'][0]['room_name']
-                            current_day['periods'][period]['teacher'] = current_period['lessons'][0]['teachers'][0]
-                        except KeyError:
-                            current_day['periods'][period]['room'] = None
-                            current_day['periods'][period]['teacher'] = None
-                        current_day['periods'][period]['border_colour'] = current_period['lessons'][0]['class_border_colour']
-                        current_day['periods'][period]['background_colour'] = current_period['lessons'][0]['class_background_colour']
-                    except IndexError:
-                        current_day['periods'][period]['full_name'] = None
-                        current_day['periods'][period]['name'] = None
-                        current_day['periods'][period]['room'] = None
-                        current_day['periods'][period]['border_colour'] = None
-                        current_day['periods'][period]['background_colour'] = None
-                        current_day['periods'][period]['teacher'] = None
-                            
-                    try: # We can try to get the start and end for the period, but sometimes, Sentral doesn't add that either!
-                        current_day['periods'][period]['start'] = current_period['period_start_time']
-                        current_day['periods'][period]['end'] = current_period['period_end_time']
-                    except KeyError:
-                        current_day['periods'][period]['start'] = None
-                        current_day['periods'][period]['end'] = None
+                current_day_data = data[week]['dates'][str(day+1)] # This makes it easier to reference just the day we need
+                timetable[timetable_day]['periods'] = [] # Add a blank space for this day in the list
+                timetable[timetable_day]['date'] = parse(current_day_data['date_name']).strftime('%c') # Add the date to the day
+                timetable[timetable_day]['is_today'] = current_day_data['is_today'] # Add is_today to the day
                 
-                current_day['date'] = current_day['date'].strftime('%c')
-                
-                timetable.append(current_day) # Add all of today's periods to the timetable
+                for period in range(len(current_day_data['period'])): # Instead of asusuming it will be eleven periosd, this just returns however many periods there are
+                    timetable[timetable_day]['periods'].append({}) # Make space for a new period on the day
                     
+                    timetable[timetable_day]['periods'][period]['is_now'] = current_day_data['period'][period]['is_now'] # Add is_now to the period, a new parameter
+                    if current_day_data['period'][period]['start_time'] != None: # Checking that Sentral igves th estart time
+                        timetable[timetable_day]['periods'][period]['start'] = current_day_data['period'][period]['start_time'] # The generic hour:minute start time
+                        timetable[timetable_day]['periods'][period]['end'] = current_day_data['period'][period]['end_time'] # The generic hour:minute end time
+                        timetable[timetable_day]['periods'][period]['start_time_date'] = datetime( # This creates a datetime object with the full date and time of the start of the period
+                                                                                        year=parse(timetable[timetable_day]['date']).year,
+                                                                                        month=parse(timetable[timetable_day]['date']).month,
+                                                                                        day=parse(timetable[timetable_day]['date']).day,
+                                                                                        hour=int(current_day_data['period'][period]['start_time'].split(':')[0]),
+                                                                                        minute=int(current_day_data['period'][period]['start_time'].split(':')[1])
+                                                                                        ).strftime('%c')
+                        timetable[timetable_day]['periods'][period]['end_time_date'] = datetime( # This creates a datetime object with the full date and time of the end of the period/
+                                                                                        year=parse(timetable[timetable_day]['date']).year,
+                                                                                        month=parse(timetable[timetable_day]['date']).month,
+                                                                                        day=parse(timetable[timetable_day]['date']).day,
+                                                                                        hour=int(current_day_data['period'][period]['end_time'].split(':')[0]),
+                                                                                        minute=int(current_day_data['period'][period]['end_time'].split(':')[1])
+                                                                                        ).strftime('%c')
+                    else: # Sometimes, if it's a holiday, or Sentral wants to be annoying they don't give the start time or end time
+                        timetable[timetable_day]['periods'][period]['start'] = None
+                        timetable[timetable_day]['periods'][period]['end'] = None
+                        timetable[timetable_day]['periods'][period]['start_time_date'] = None
+                        timetable[timetable_day]['periods'][period]['end_time_date'] = None
+                    
+                    if current_day_data['period'][period]['lessons'] != []: # If it's a period without a lesson, then there's nothing in the lesson parameter
+                        timetable[timetable_day]['periods'][period]['full_name'] = current_day_data['period'][period]['lessons'][0]['subject_name']
+                        timetable[timetable_day]['periods'][period]['name'] = current_day_data['period'][period]['lessons'][0]['lesson_class_name']
+                        timetable[timetable_day]['periods'][period]['room'] = current_day_data['period'][period]['lessons'][0]['room_name']
+                        timetable[timetable_day]['periods'][period]['border_colour'] = current_day_data['period'][period]['lessons'][0]['class_border_colour']
+                        timetable[timetable_day]['periods'][period]['background_colour'] = current_day_data['period'][period]['lessons'][0]['class_background_colour']
+                        try: # This checks that there is a teacher during the lesson
+                            timetable[timetable_day]['periods'][period]['teacher'] = current_day_data['period'][period]['lessons'][0]['teachers'][0] # The 0 at the end could be a mistake, if anyone knows, please open an issue
+                        except KeyError: # If there's not set it to None
+                            timetable[timetable_day]['periods'][period]['teacher'] = None
+                    else: # If there isn't a lesson on, then it's not a proper period
+                        timetable[timetable_day]['periods'][period]['full_name'] = None
+                        timetable[timetable_day]['periods'][period]['name'] = None
+                        timetable[timetable_day]['periods'][period]['room'] = None
+                        timetable[timetable_day]['periods'][period]['teacher'] = None
+                        timetable[timetable_day]['periods'][period]['border_colour'] = None
+                        timetable[timetable_day]['periods'][period]['background_colour'] = None
+                        
         return timetable
 
     
