@@ -138,7 +138,7 @@ class scrapers:
                 
             page.get_by_placeholder("Enter your password").fill(self.config['password'])
             page.get_by_role("button", name="Sign in").click()
-            page.get_by_role("button", name="No").click()
+            page.get_by_role("button", name="Yes").click()
             
             try: # We expect that we will be logged into Sentral by now
                 expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}", re.IGNORECASE), timeout=3000)
