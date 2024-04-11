@@ -225,13 +225,7 @@ class scrapers:
             dict: A dictionary with the timetable from the json on the page
         """
         
-        # Ok, so a quick explanation. The Sentral page for the timetable gets it's data from the url below.
-        # This data is really weirdly formatted, but hey, they're probably working with a backend they haven't changed in 3 years
-        # I mean, changing the frontend so that most people agree that it's worse, probably just to break a python package that takes data
-        # from Sentral made by a bunch of high schoolers (https://github.com/J-J-B-J/get-sentral [Great project, this was made because that got broken by the update]) is enough work anyway, right?
-        
-        # Oh man, that was a really long rant.
-        # Anyway, this just scrapes the page for the json, and converts it to a dictionary that python can acess.
+        # This just scrapes the page for the json, and converts it to a dictionary that python can acess.
         # I found this url after watching some kids at my school go into the network tab in dev tools in Chrome, and look at what Sentral was accessing. Thank you!
         
         page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/timetable/getFullTimetableInDates/{str(self.student_id)}/undefined/true")
