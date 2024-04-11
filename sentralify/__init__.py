@@ -87,6 +87,8 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     if timetable:
         timetable = Sentral.generate_timetable(scraper.save_timetable(page))
         data['timetable'] = timetable
+        ics = scraper.save_ics(page)
+        data['ics'] = ics
     if calendar:
         calendar = Sentral.generate_calendar(scraper.save_calendar(page))
         data['calendar'] = calendar

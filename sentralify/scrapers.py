@@ -22,7 +22,7 @@ import json
 import re
 from playwright.sync_api import expect
 from bs4 import BeautifulSoup
-import time
+import os
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Main scrapers class
@@ -219,7 +219,6 @@ class scrapers:
         
         Args:
             page (playwright page): The current page / tab object the playwright is working in, for continuity between functions
-            student_id (int): The student id as an int
 
         Returns:
             dict: A dictionary with the timetable from the json on the page
@@ -231,6 +230,29 @@ class scrapers:
         page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/timetable/getFullTimetableInDates/{str(self.student_id)}/undefined/true")
         return json.loads(BeautifulSoup(page.content(), "lxml").text)
 
+    def save_ics(self, page):
+        """
+        Saves the ics page and returns the html
+
+        Args:
+            page (playwright page): The current page / tab object the playwright is working in, for continuity between functions
+
+        Returns:
+            html: The html content on the page
+        """
+        
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal/#!/timetable/{str(self.student_id)}")
+        with page.expect_download() as download_info:
+            page.get_by_text("Export as ICS").first.click()
+        download = download_info.value
+
+        download.save_as("../timetable.ics")
+        with open('../timetable.ics', 'r') as timetable_ics:
+            timetable_ics_contents = timetable_ics.read()
+            
+        os.remove("../timetable.ics")
+        return timetable_ics_contents
+        
     def save_notices(self, page):
         """
         Saves the notices page and returns the html

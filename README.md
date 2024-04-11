@@ -4,6 +4,7 @@ Scrape Sentral data and use it!
 Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** package developed by J-J-B-J and SuperHarmony910.
 Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Timetable
+ - ICS Timetable
  - Awards
  - Attendance
  - Activites
@@ -318,6 +319,12 @@ Below is a small snippet of one day of data
 ]
 ```
 To get the your attendance status on the first day of the school year, you would call ```sentralify(config)['student_details']['attendance'][0][0][0]['status']```. The three zeros are the term, the week number in the term, and the day of the week.
+
+#### ICS Timetable
+If you, for example, wanted to import your timetable into your calendar, then you would export your timetable as an ICS file, and import it into, say, Google Calendar.
+This is how you can, for whatever reason, access your timetable in an ICS format using Sentralify.
+To parse the ICS data in python, you can use the [ics PyPi library](https://pypi.org/project/ics/).
+To access the ICS data use: `sentralify(config)['ics']`
 
 ### That's all folks!
 That's all of my documentation for now, I think I've covered everything, now it's up to you to take this project places!
