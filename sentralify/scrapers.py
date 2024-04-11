@@ -241,17 +241,29 @@ class scrapers:
             html: The html content on the page
         """
         
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal/#!/timetable/{str(self.student_id)}")
-        with page.expect_download() as download_info:
-            page.get_by_text("Export as ICS").first.click()
-        download = download_info.value
+        ics_downloaded = False
+        
+        for i in range(3):
+            try:
+                page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal/#!/timetable/{str(self.student_id)}")
+                with page.expect_download() as download_info:
+                    page.get_by_text("Export as ICS").first.click()
+                download = download_info.value
 
-        download.save_as("../timetable.ics")
-        with open('../timetable.ics', 'r') as timetable_ics:
-            timetable_ics_contents = timetable_ics.read()
-            
-        os.remove("../timetable.ics")
-        return timetable_ics_contents
+                download.save_as("timetable.ics")
+                with open('timetable.ics', 'r') as timetable_ics:
+                    timetable_ics_contents = timetable_ics.read()
+                    
+                os.remove("timetable.ics")
+                ics_downloaded = True
+                break
+            except:
+                pass
+        if ics_downloaded:
+            return timetable_ics_contents
+        else:
+            print('Welp, looks like there is an error in scrapers.save_ics')
+            return None
         
     def save_notices(self, page):
         """
