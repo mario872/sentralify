@@ -1,6 +1,8 @@
 # sentralify
 Scrape Sentral data and use it!
 
+A Web Interface to the data scraped by Sentralify can be found [here](https://jimmyscompany.top).
+
 Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** package developed by J-J-B-J and SuperHarmony910.
 Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Timetable
