@@ -92,7 +92,10 @@ class generators:
                     if current_day_data['period'][period]['lessons'] != []: # If it's a period without a lesson, then there's nothing in the lesson parameter
                         timetable[timetable_day]['periods'][period]['full_name'] = current_day_data['period'][period]['lessons'][0]['subject_name']
                         timetable[timetable_day]['periods'][period]['name'] = current_day_data['period'][period]['lessons'][0]['lesson_class_name']
-                        timetable[timetable_day]['periods'][period]['room'] = current_day_data['period'][period]['lessons'][0]['room_name']
+                        try:
+                            timetable[timetable_day]['periods'][period]['room'] = current_day_data['period'][period]['lessons'][0]['room_name']
+                        except KeyError: # If there's not set it to None:
+                            timetable[timetable_day]['periods'][period]['room'] = None
                         timetable[timetable_day]['periods'][period]['border_colour'] = current_day_data['period'][period]['lessons'][0]['class_border_colour']
                         timetable[timetable_day]['periods'][period]['background_colour'] = current_day_data['period'][period]['lessons'][0]['class_background_colour']
                         try: # This checks that there is a teacher during the lesson

@@ -44,10 +44,7 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     
     start = time.time() # So that we can know how long it took to scrape the Sentral data
     
-    try:
-        p = sync_playwright().start() # Start a playwright instance
-    except playwright._impl._errors.Error:
-        pass
+    p = sync_playwright().start() # Start a playwright instance
     
     # Initialise the generators and scrapers
     Sentral = generators
