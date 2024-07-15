@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentralify"
+version = "1.2.7"
+description = "Scrape Sentral data and use it!"
+readme = "README.md"
+authors = [{ name = "mario872", email = "jamesaglynn10@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["sentral", "sentralify", "scrape", "data", "school", "timetable", "time table"]
+dependencies = [
+    "playwright >= 1.41.2",
+    "beautifulsoup4 >= 4.12.3",
+    "lxml >= 5.1.0",
+    "markdownify >= 0.11.6",
+    "python-dateutil >= 2.8.2"
+]
+requires-python = ">=3.10"
+
+# [tool.setuptools]
+# py-modules = ["__init__", "generators", "scrapers"]
+
+[project.urls]
+Homepage = "https://github.com/mario872/sentralify"
+ 
