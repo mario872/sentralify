@@ -294,11 +294,11 @@ class generators:
             current_year_data = data['awards']["behavioural_summaries"][year][0]
             details['awards'].append({
                 'year': year,
-                1: current_year_data["term"]["1"],
-                2: current_year_data["term"]["2"],
-                3: current_year_data["term"]["3"],
-                4: current_year_data["term"]["4"],
-                "total": current_year_data["total_count"]
+                1: int(current_year_data["term"]["1"]),
+                2: int(current_year_data["term"]["2"]),
+                3: int(current_year_data["term"]["3"]),
+                4: int(current_year_data["term"]["4"]),
+                "total": int(current_year_data["total_count"])
             })
 
         return details
