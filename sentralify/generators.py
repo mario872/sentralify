@@ -301,6 +301,4 @@ class generators:
                 "total": current_year_data["total_count"]
             })
 
-        print(details['awards'])
-
         return details
