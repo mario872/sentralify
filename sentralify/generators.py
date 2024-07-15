@@ -288,10 +288,19 @@ class generators:
                                           'description': activity_details['description'],
                                           'category': activity_details['category']})
         
-        details['awards'].append({'total': data['awards']['behavioural_summaries'][0]['total_count'],
-                                 'terms': {1: data['awards']['behavioural_summaries'][0]['term']['1'],
-                                           2: data['awards']['behavioural_summaries'][0]['term']['2'],
-                                           3: data['awards']['behavioural_summaries'][0]['term']['3'],
-                                           4: data['awards']['behavioural_summaries'][0]['term']['4']}})
-        
+        details['awards'] = []
+
+        for year in data['awards']["behavioural_summaries"].keys():
+            current_year_data = data['awards']["behavioural_summaries"][year][0]
+            details['awards'].append({
+                'year': year,
+                1: current_year_data["term"]["1"],
+                2: current_year_data["term"]["2"],
+                3: current_year_data["term"]["3"],
+                4: current_year_data["term"]["4"],
+                "total": current_year_data["total_count"]
+            })
+
+        print(details['awards'])
+
         return details

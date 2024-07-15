@@ -297,7 +297,32 @@ Okay, this one is not as structured as the others, because it's a big collection
             "category": "Excursion / Incursion Request",
         }
     ],
-    "awards": [{"total": "0", "terms": {1: "1", 2: "0", 3: "0", 4: "0"}}],
+    "awards": [
+                {
+                    'year': '2024',
+                    1: '1',
+                    2: '1',
+                    3: '0',
+                    4: '0',
+                    'total': '2'
+                },
+                {
+                    'year': '2023',
+                    1: '2',
+                    2: '8',
+                    3: '1',
+                    4: '3',
+                    'total': '14'
+                },
+                {
+                    'year': '2022',
+                    1: '0',
+                    2: '0',
+                    3: '0',
+                    4: '0',
+                    'total': '0'
+                }
+               ]
 }
 
 ```
