@@ -50,7 +50,7 @@ sentralify is quite simple from the user's perspective, all you have to do is ca
 If you want to understand in more detail how this works, then read on!
 
 ### sentralify()
-```sentralify()``` needs only 1 argument but accepts a total of 6. These arguments are ```config, timetable, notices, calendar, persistent, check_login```; the last 5 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. ```config``` is required, and accepts a python dictioary formatted as follows:
+```sentralify()``` needs only 1 argument but accepts a total of 7. These arguments are ```config, timetable, notices, calendar, persistent, check_login, timeout```; the last 6 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. `timeout` will be 5000 (5 seconds) by default. ```config``` is required, and accepts a python dictioary formatted as follows:
 
 ```
 config = {"username": "your_username",
