@@ -26,7 +26,7 @@ import time
 from .scrapers import scrapers
 from .generators import generators
 
-def sentralify(config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True, check_login: bool = False):
+def sentralify(config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True, check_login: bool = False, timeout = 5000):
     """
     Function to scrape Sentral
         
@@ -51,7 +51,7 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     
     # Initialise the generators and scrapers
     Sentral = generators
-    scraper = scrapers(config)
+    scraper = scrapers(config, timeout=timeout)
     
     if check_login: persistent = False
     

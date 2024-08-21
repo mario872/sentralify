@@ -28,7 +28,7 @@ import os
 # Main scrapers class
 
 class scrapers:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, timeout: int):
         """
         Run on creation of scrapers class, initiates
         config variable for the rest of the class
@@ -38,6 +38,7 @@ class scrapers:
         """
         
         self.config = config
+        self.timeout = timeout
     
     def check_login(self, browser):
         
@@ -107,7 +108,7 @@ class scrapers:
             page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal?action=login_student") # Go to main Sentral v2 portal login page
             
             try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
-                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]}", re.IGNORECASE), timeout=10000)
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]}", re.IGNORECASE), timeout=self.timeout)
                 return page
             except AssertionError: # Okay, we haven't logged in recently enough
                 pass
