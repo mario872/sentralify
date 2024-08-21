@@ -290,15 +290,25 @@ class generators:
         
         details['awards'] = []
 
-        for year in data['awards']["behavioural_summaries"].keys():
-            current_year_data = data['awards']["behavioural_summaries"][year][0]
-            details['awards'].append({
-                'year': year,
-                1: int(current_year_data["term"]["1"]),
-                2: int(current_year_data["term"]["2"]),
-                3: int(current_year_data["term"]["3"]),
-                4: int(current_year_data["term"]["4"]),
-                "total": int(current_year_data["total_count"])
-            })
+        # Awards are currently broken
+        #for year in data['awards']["behavioural_summaries"].keys():
+        #    current_year_data = data['awards']["behavioural_summaries"][year][0]
+        #    details['awards'].append({
+        #        'year': year,
+        #        1: int(current_year_data["term"]["1"]),
+        #        2: int(current_year_data["term"]["2"]),
+        #        3: int(current_year_data["term"]["3"]),
+        #        4: int(current_year_data["term"]["4"]),
+        #        "total": int(current_year_data["total_count"])
+        #    })
+
+        details['awards'].append({
+            'year': 2024,
+            1: 99,
+            2: 99,
+            3: 99,
+            4: 99,
+            "total": 396
+        })
 
         return details

@@ -46,14 +46,14 @@ class scrapers:
             page = browser.new_page()
             
             try:
-                page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+                page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal?action=login_student") # Go to main Sentral v2 portal login page
             except Exception as e:
                 print(Exception)
                 return False
             
-            page.get_by_label("Email or Username*").fill(self.config['username'])
-            page.get_by_label("Password*").fill(self.config['password'])
-            page.get_by_role("button", name="Log in").click()
+            #page.get_by_label("Email or Username*").fill(self.config['username'])
+            #page.get_by_label("Password*").fill(self.config['password'])
+            #page.get_by_role("button", name="Log in").click()
             
             try:
                 expect(page).to_have_title('Portal Login', timeout=1000)
@@ -104,37 +104,37 @@ class scrapers:
         
             page = browser.new_page()
             
-            page.goto(f"https://{self.config['base_url']}.sentral.com.au/auth/portal") # Go to main Sentral v2 portal login page
+            page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal?action=login_student") # Go to main Sentral v2 portal login page
             
             try: # If we have already signed in before, and the cookies haven't expired, then we will be redirected to the portal page automatically
-                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}", re.IGNORECASE), timeout=1000)
+                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]}", re.IGNORECASE), timeout=5000)
                 return page
             except AssertionError: # Okay, we haven't logged in recently enough
                 pass
             
-            page.get_by_label("Email or Username*").fill(self.config['username'])
-            page.get_by_label("Password*").fill(self.config['password'])
-            page.get_by_role("button", name="Log in").click()
+            #page.get_by_label("Email or Username*").fill(self.config['username'])
+            #page.get_by_label("Password*").fill(self.config['password'])
+            #page.get_by_role("button", name="Log in").click()
             
-            try: # Hey, maybe we won't have to use a microsoft login at least?
-                expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0].capitalize()}", re.IGNORECASE), timeout=1000)
-                return page
-            except AssertionError: # Okay, never mind we do have to
-                pass
+            #try: # Hey, maybe we won't have to use a microsoft login at least?
+            #    expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]}", re.IGNORECASE), timeout=1000)
+            #    return page
+            #except AssertionError: # Okay, never mind we do have to
+            #    pass
             
-            found_email_address = False
+            #found_email_address = False
             
-            try:
-                expect(page.get_by_text(re.compile(f'{self.config["username"]}', re.IGNORECASE))).to_be_visible(timeout=3000)
-                page.get_by_text(re.compile(f'{self.config["username"]}', re.IGNORECASE)).click()
-                found_email_address = True
-            except AssertionError:
-                pass
+            #try:
+            #    expect(page.get_by_text(re.compile(f'{self.config["username"]}', re.IGNORECASE))).to_be_visible(timeout=3000)
+            #    page.get_by_text(re.compile(f'{self.config["username"]}', re.IGNORECASE)).click()
+            #    found_email_address = True
+            #except AssertionError:
+            #    pass
             
             # Logging in using Microsoft account
-            if not found_email_address:
-                page.get_by_placeholder(re.compile("Use your email address")).fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
-                page.get_by_role("button", name="Next").click()
+            #if not found_email_address:
+            page.get_by_placeholder(re.compile("Use your email address")).fill(f'{self.config["username"]}@education.{self.config["state"]}.gov.au')
+            page.get_by_role("button", name="Next").click()
                 
             page.get_by_placeholder("Enter your password").fill(self.config['password'])
             page.get_by_role("button", name="Sign in").click()
@@ -176,35 +176,39 @@ class scrapers:
         Returns:
             dict: A dictionary with the all the student's details from json on all the pages
         """
-        
+
+        self.portal_ver = 'portal' # or portal2
+
         # Student ID
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/user?action=getUserDetails")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/user?action=getUserDetails")
         self.student_id = int(json.loads(BeautifulSoup(page.content(), "lxml").text)['student_id'])
         
         # Student's classes
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/user?action=get_student_info&student_id={str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/user?action=get_student_info&student_id={str(self.student_id)}")
         classes = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         # Student's attendance record
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/attendance?action=getStudentHeatmapData&student_id={str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/attendance?action=getStudentHeatmapData&student_id={str(self.student_id)}")
         attendance = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         # Student's Attendaance Percent
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/attendance?action=getStudentTermAttendance&student_id={str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/attendance?action=getStudentTermAttendance&student_id={str(self.student_id)}")
         attendance_percent = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         #Student's daily timetable
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/timetable/getDailyTimetable/{str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/timetable/getDailyTimetable/{str(self.student_id)}")
         daily_timetable = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         #Student's activites
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/activity/getStudentActivities/{str(self.student_id)}")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/activity/getStudentActivities/{str(self.student_id)}")
         activites = json.loads(BeautifulSoup(page.content(), "lxml").text)
         
         #Students awards
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/portal2/wellbeing/overview/{str(self.student_id)}")
-        awards = json.loads(BeautifulSoup(page.content(), "lxml").text)
-        
+        #AWARDS ARE BROKEN
+        #page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/wellbeing/overview/{str(self.student_id)}")
+        #awards = json.loads(BeautifulSoup(page.content(), "lxml").text)
+        awards = None
+
         return {'classes': classes,
                 'attendance': attendance,
                 'attendance_percent': attendance_percent,
@@ -227,7 +231,7 @@ class scrapers:
         # This just scrapes the page for the json, and converts it to a dictionary that python can acess.
         # I found this url after watching some kids at my school go into the network tab in dev tools in Chrome, and look at what Sentral was accessing. Thank you!
         
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/timetable/getFullTimetableInDates/{str(self.student_id)}/undefined/true")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/timetable/getFullTimetableInDates/{str(self.student_id)}/undefined/true")
         return json.loads(BeautifulSoup(page.content(), "lxml").text)
 
     def save_ics(self, page):
@@ -245,7 +249,8 @@ class scrapers:
         
         for i in range(3):
             try:
-                page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal/#!/timetable/{str(self.student_id)}")
+                #print(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/#!/timetable/{str(self.student_id)}")
+                page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/#!/timetable/{str(self.student_id)}")
                 with page.expect_download() as download_info:
                     page.get_by_text("Export as ICS").first.click()
                 download = download_info.value
@@ -275,7 +280,7 @@ class scrapers:
         Returns:
             html: The html content on the page
         """
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/portal2/#!/news/notices")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/{self.portal_ver}/#!/news/notices")
         page.get_by_role("button", name="Filter").click()
         page.get_by_text('Title Published after').click()
         page.get_by_role("button", name="Today").click()
@@ -293,5 +298,5 @@ class scrapers:
             html: The html content on the page
         """
         
-        page.goto(f"https://{self.config['base_url']}.sentral.com.au/s-Y7eXkn/webcal/")
+        page.goto(f"https://{self.config['base_url']}.sentral.com.au/{self.config['unique_path']}/webcal/")
         return page.content()

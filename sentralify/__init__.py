@@ -41,7 +41,10 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     Returns:
         dict: A dictionary with the timetable, notices, calendar, student details, and the amount of time it took to gather the data
     """
-    
+
+    schools = {'caringbahhs': 's-Y7eXkn'}
+    config['unique_path'] = schools[config['base_url']]
+
     start = time.time() # So that we can know how long it took to scrape the Sentral data
     
     p = sync_playwright().start() # Start a playwright instance
