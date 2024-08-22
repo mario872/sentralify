@@ -31,7 +31,7 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     Function to scrape Sentral
         
     Args:
-        config (dict): A dictionary with the fields: username, password, base_url, state, and headless
+        config (dict): A dictionary with the fields: username, password, base_url, state [state is an abbreviation, e.g. nsw / NSW instead of New South Wales], and headless
         timetable (bool = True): Whether or not to scrape the timetable
         notices (bool = True): Whether or not to scrape the notices
         calendar (bool = True): Whether or not to scrape the calendar
