@@ -56,7 +56,7 @@ If you want to understand in more detail how this works, then read on!
 config = {"username": "your_username",
           "password": "your_password",
           "base_url": "base_url_here_eg_caringbahhs",
-          "state": "your_state_here_eg_nsw",
+          "state": "your_state_here_must_be_abbreviation_eg_nsw",
           "headless": False}
 ```
 
