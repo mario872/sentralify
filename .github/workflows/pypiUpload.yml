@@ -20,7 +20,14 @@ jobs:
       - run: cp sentralify/README.md sentralify/build/
       - run: cp sentralify/LICENSE sentralify/build/
       # Update version in pyproject.toml file
-      - run: python -c "import toml;data=toml.load('sentralify/build/pyproject.toml');data['project']['version']='${{ github.event.release.tag_name }}';f=open('sentralify/build/pyproject.toml','w');toml.dump(data, f);f.close()"
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          git fetch --tags
+          TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "Latest tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - run: python -c "import toml;data=toml.load('sentralify/build/pyproject.toml');data['project']['version']='${{ steps.get_tag.outputs.tag }}';f=open('sentralify/build/pyproject.toml','w');toml.dump(data, f);f.close()"
       - run: cat sentralify/build/pyproject.toml
       # Build and upload
       - run: python -m build sentralify/build/
