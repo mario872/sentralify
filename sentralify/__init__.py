@@ -26,17 +26,19 @@ import time
 from .scrapers import scrapers
 from .generators import generators
 
-def sentralify(config: dict, timetable: bool = True, notices: bool = True, calendar: bool = True, persistent: bool = True, check_login: bool = False, timeout = 5000):
+def sentralify(config: dict, headless: bool=True, timetable: bool=True, notices: bool=True, calendar: bool=True, persistent: bool=True, check_login: bool=False, timeout=5000):
     """
     Function to scrape Sentral
         
     Args:
-        config (dict): A dictionary with the fields: username, password, base_url, state [state is an abbreviation, e.g. nsw / NSW instead of New South Wales], and headless
+        config (dict): A dictionary with the fields: username, password, base_url, state [state is an abbreviation, e.g. nsw / NSW instead of New South Wales], and headless (legacy support)
+        headless (bool): Whether or not to run the browser in headless mode, adding it in the config still takes priority over this new method though
         timetable (bool = True): Whether or not to scrape the timetable
         notices (bool = True): Whether or not to scrape the notices
         calendar (bool = True): Whether or not to scrape the calendar
-       persistent (bool = True): Whether or not to make the browser instance consistent pros: makes logging in faster, cons: stores data on computer
+        persistent (bool = True): Whether or not to make the browser instance consistent pros: makes logging in faster, cons: stores data on computer
         check_login (bool = True): Used to check only if login is valid, returns bool, not dict
+        timeout (int = 5000): The timeout for the scraper, in milliseconds. Default is 5 seconds.
 
     Returns:
         dict: A dictionary with the timetable, notices, calendar, student details, and the amount of time it took to gather the data
@@ -53,12 +55,20 @@ def sentralify(config: dict, timetable: bool = True, notices: bool = True, calen
     Sentral = generators
     scraper = scrapers(config, timeout=timeout)
     
+    if "headless" in config.keys():
+        if config["headless"] == False:
+            hdl = False
+        else:
+            hdl = True
+    else:
+        hdl = headless
+    
     if check_login: persistent = False
     
     if persistent: # If this should be a persistent browser context, then launch it as persistent, otherwise launch in incognito mode
-        browser = p.chromium.launch_persistent_context(f"contexts/{config['username']}", headless=config['headless'])
+        browser = p.chromium.launch_persistent_context(f"contexts/{config['username']}", headless=hdl)
     else:
-        browser = p.chromium.launch(headless=config['headless'])
+        browser = p.chromium.launch(headless=hdl)
     
     if check_login:
         value = scraper.check_login(browser)
