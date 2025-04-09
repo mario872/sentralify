@@ -16,12 +16,12 @@ jobs:
       - run: python -m pip install twine==6.0.1 build toml
       # Copy files into build directory
       - run: tree .
-      - run: cp sentralify/sentralify/__init__.py sentralify/build/src/sentralify/
-      - run: cp sentralify/sentralify/generators.py sentralify/build/src/sentralify/
-      - run: cp sentralify/sentralify/scrapers.py sentralify/build/src/sentralify/
-      - run: cp sentralify/sentralify/requirements.txt sentralify/build/
-      - run: cp sentralify/README.md sentralify/build/
-      - run: cp sentralify/LICENSE sentralify/build/
+      - run: cp sentralify/__init__.py sentralify/build/src/sentralify/
+      - run: cp sentralify/generators.py sentralify/build/src/sentralify/
+      - run: cp sentralify/scrapers.py sentralify/build/src/sentralify/
+      - run: cp sentralify/requirements.txt sentralify/build/
+      - run: cp README.md sentralify/build/
+      - run: cp LICENSE sentralify/build/
       # Update version in pyproject.toml file
       - name: Get latest tag
         id: get_tag
@@ -33,9 +33,9 @@ jobs:
       - run: python -c "import toml;data=toml.load('sentralify/build/pyproject.toml');data['project']['version']='${{ steps.get_tag.outputs.tag }}';f=open('sentralify/build/pyproject.toml','w');toml.dump(data, f);f.close()"
       - run: cat sentralify/build/pyproject.toml
       # Build and upload
-      - run: python -m build sentralify/build/
+      - run: python -m build build/
       - run: tree .
-      - run: python -m twine check sentralify/build/dist/*
-      - run: python -m twine upload -u __token__ -p "$pypi_token" sentralify/build/dist/*
+      - run: python -m twine check build/dist/*
+      - run: python -m twine upload -u __token__ -p "$pypi_token" build/dist/*
         env:
           pypi_token: ${{ secrets.PYPI_API_TOKEN }}
