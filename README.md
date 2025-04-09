@@ -23,10 +23,10 @@ from sentralify import sentralify
 config = {"username": "your_username",
           "password": "your_password",
           "base_url": "base_url_here_eg_caringbahhs",
-          "state": "your_state_here_eg_nsw",
-          "headless": False}
+          "state": "your_state_here_eg_nsw"
+          }
 
-data = sentralify(config)
+data = sentralify(config, headless=False)
 
 # A LOT of data comes out of this sentralify function, get ready!
 print(f"Timetable: {data['timetable']}")
@@ -50,17 +50,17 @@ sentralify is quite simple from the user's perspective, all you have to do is ca
 If you want to understand in more detail how this works, then read on!
 
 ### sentralify()
-```sentralify()``` needs only 1 argument but accepts a total of 7. These arguments are ```config, timetable, notices, calendar, persistent, check_login, timeout```; the last 6 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. `timeout` will be 5000 (5 seconds) by default. ```config``` is required, and accepts a python dictioary formatted as follows:
+```sentralify()``` needs only 1 argument but accepts a total of 8. These arguments are ```config, headless, timetable, notices, calendar, persistent, check_login, timeout```; the last 7 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. `timeout` will be 5000 (5 seconds) by default. ```config``` is required, and accepts a python dictioary formatted as follows:
 
 ```
 config = {"username": "your_username",
           "password": "your_password",
           "base_url": "base_url_here_eg_caringbahhs",
-          "state": "your_state_here_must_be_abbreviation_eg_nsw",
-          "headless": False}
+          "state": "your_state_here_must_be_abbreviation_eg_nsw"
+          }
 ```
 
-```headless``` in the config, will dictate, whether a chromium window opens, or whether it does it all invisibly. ```timetable, notices, calendar``` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. ```persistent``` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
+```headless``` in the arguments, will dictate, whether a chromium window opens, or whether it does it all invisibly. ```timetable, notices, calendar``` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. ```persistent``` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
 
 ```check_login``` added in v1.1.0 is used to check the user's login, ie. check if they spelled their password and email correctly, if used, it will return a value of ```True``` or ```False```.
 
@@ -241,6 +241,7 @@ Below is an example of one notice that it returns:
 ]
 ```
 Yes, if you're the teacher that posted this who is reading this, then I can take it down if you want me to, no I will not bother asking for verification if it is really you, yes I will just make up a notice about school ending 5 weeks before the summer holidays, and this is definitely official.
+Also, if you are that teacher, and I think I remember who that teacher is a year later, man, you are a great teacher. I loved having you for Science.
 The general gist of how sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run ```sentralify(config)['notices'][0]['author']```
 
 #### Calendar
