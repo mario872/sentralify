@@ -17,7 +17,7 @@ Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
 
 A quick sample to feed your coding addicted brain, so you can get started quickly:
 
-```
+```python
 from sentralify import sentralify
 
 config = {"username": "your_username",
@@ -46,13 +46,13 @@ Sentralify has plans to add lots more features, such as:
  - Generating barcode for use in library (idea from get-sentral)
 
 ## Documentation
-sentralify is quite simple from the user's perspective, all you have to do is call ```sentralify(config)```, and it will magically scrape sentral for you and give you all the data you could ever want.
+sentralify is quite simple from the user's perspective, all you have to do is call `sentralify(config)`, and it will magically scrape sentral for you and give you all the data you could ever want.
 If you want to understand in more detail how this works, then read on!
 
 ### sentralify()
-```sentralify()``` needs only 1 argument but accepts a total of 8. These arguments are ```config, headless, timetable, notices, calendar, persistent, check_login, timeout```; the last 7 are optional, and will all be ```True``` if not disabled, except for ```check_login``` which will be ```False```. `timeout` will be 5000 (5 seconds) by default. ```config``` is required, and accepts a python dictioary formatted as follows:
+`sentralify()` needs only 1 argument but accepts a total of 9. These arguments are `config, headless, timetable, notices, calendar, persistent, check_login, persistent_dir, timeout`; the last 8 are optional, and will all be `True` if not disabled, except for `check_login` which will be `False`. `timeout` will be 5000 (5 seconds) by default, `persistent_dir` will be `None` but **needs** to be set if you set `persistent` to `True` (as is default). `config` is required, and accepts a python dictioary formatted as follows:
 
-```
+```python
 config = {"username": "your_username",
           "password": "your_password",
           "base_url": "base_url_here_eg_caringbahhs",
@@ -60,17 +60,17 @@ config = {"username": "your_username",
           }
 ```
 
-```headless``` in the arguments, will dictate, whether a chromium window opens, or whether it does it all invisibly. ```timetable, notices, calendar``` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. ```persistent``` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
+`headless` in the arguments, will dictate, whether a chromium window opens, or whether it does it all invisibly. `timetable, notices, calendar` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. `persistent` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
 
-```check_login``` added in v1.1.0 is used to check the user's login, ie. check if they spelled their password and email correctly, if used, it will return a value of ```True``` or ```False```.
+`check_login` added in v1.1.0 is used to check the user's login, ie. check if they spelled their password and email correctly, if used, it will return a value of `True` or `False`.
 
 ### sentralify() return data
 sentralify returns a lot of data! Below is a documentation of what it returns
 
 ##### Timetable
-The timetable that sentralify returns can be accessed by using ```sentralify(config)['timetable']```
+The timetable that sentralify returns can be accessed by using `sentralify(config)['timetable']`
 Below is the general structure of one day, in one week that timetable returns:
-```
+```python
 [
     {
         "periods": [
@@ -225,12 +225,12 @@ Below is the general structure of one day, in one week that timetable returns:
 
 ```
 Yes, that is actually my timetable for one day, no I am not in year 13, no I am not telling you what year I am in.
-The general gist of how sentralify returns your timetable is 14 dictionaries in a list, each containing the date, and another list of 11 periods, with various values shown above. In each day, it also incudes the ```"is_today"``` key, which indicated whether the data was pulled from the cyclical timetable (False), or the daily timetable (True). If you wanted to access Period 1's room for example, you would run ```sentralify(config)['timetable'][0]['periods'][1]['room']```
+The general gist of how sentralify returns your timetable is 14 dictionaries in a list, each containing the date, and another list of 11 periods, with various values shown above. In each day, it also incudes the `"is_today"` key, which indicated whether the data was pulled from the cyclical timetable (False), or the daily timetable (True). If you wanted to access Period 1's room for example, you would run `sentralify(config)['timetable'][0]['periods'][1]['room']`
 
 #### Notices
-The notices that sentralify returns can be accessed by using ```sentralify(config)['notices']```
+The notices that sentralify returns can be accessed by using `sentralify(config)['notices']`
 Below is an example of one notice that it returns:
-```
+```pyython
 [
     {
         'title': 'Volleyball Team Trials',
@@ -242,12 +242,12 @@ Below is an example of one notice that it returns:
 ```
 Yes, if you're the teacher that posted this who is reading this, then I can take it down if you want me to, no I will not bother asking for verification if it is really you, yes I will just make up a notice about school ending 5 weeks before the summer holidays, and this is definitely official.
 Also, if you are that teacher, and I think I remember who that teacher is a year later, man, you are a great teacher. I loved having you for Science.
-The general gist of how sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run ```sentralify(config)['notices'][0]['author']```
+The general gist of how sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run `sentralify(config)['notices'][0]['author']`
 
 #### Calendar
-The events from the school calendar that sentralify returns can be accessed by using ```sentralify(config)['calendar']```
+The events from the school calendar that sentralify returns can be accessed by using `sentralify(config)['calendar']`
 Below is an example of one events that it returns:
-```
+```python
 [
     {
         "title": "Events: All Day - Duke of Ed Qualifying AJ - Camp Coutts (McCann)",
@@ -259,11 +259,11 @@ Below is an example of one events that it returns:
 ```
 
 Yes, I'm tired of writing this dcoumentation, no I will not stop prematurely.
-The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's date, then you would run ```sentralify(config)['calendar'][0]['date']```. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
+The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's date, then you would run `sentralify(config)['calendar'][0]['date']`. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
 
 #### Student Details
 Okay, this one is not as structured as the others, because it's a big collection of other details about the student, so I'm just gonna copy-past my one over, and censor my personal details.
-```
+```python
 {
     "student_id": not_telling_you_bt_its_an_int,
     "first_name": "mario872",
@@ -328,12 +328,12 @@ Okay, this one is not as structured as the others, because it's a big collection
 
 ```
 Yes I'm doing Bowling for sport, yes all my friends are doing it too, yes, I'm a coder, so no, I do not like doing proper sport.
-This is a lot of data, but having it nicely formatted and laid out here, should make it easier to understand. If I wanted to access the third class's teacher, then I would use ```sentralify(config)['student_details']['classes'][2]['teacher']```
+This is a lot of data, but having it nicely formatted and laid out here, should make it easier to understand. If I wanted to access the third class's teacher, then I would use `sentralify(config)['student_details']['classes'][2]['teacher']`
 
 #### Attendance
 Okay, the attendance (added in v1.2.0) is really long, but I did it for you, you're welcome!
 Below is a small snippet of one day of data
-```
+```python
 [
     [
         [
@@ -346,7 +346,7 @@ Below is a small snippet of one day of data
     ]
 ]
 ```
-To get the your attendance status on the first day of the school year, you would call ```sentralify(config)['student_details']['attendance'][0][0][0]['status']```. The three zeros are the term, the week number in the term, and the day of the week.
+To get the your attendance status on the first day of the school year, you would call `sentralify(config)['student_details']['attendance'][0][0][0]['status']`. The three zeros are the term, the week number in the term, and the day of the week.
 
 #### ICS Timetable
 If you, for example, wanted to import your timetable into your calendar, then you would export your timetable as an ICS file, and import it into, say, Google Calendar.

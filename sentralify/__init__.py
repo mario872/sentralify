@@ -26,7 +26,7 @@ import time
 from .scrapers import scrapers
 from .generators import generators
 
-def sentralify(config: dict, headless: bool=True, timetable: bool=True, notices: bool=True, calendar: bool=True, persistent: bool=True, check_login: bool=False, timeout=5000):
+def sentralify(config: dict, headless: bool=True, timetable: bool=True, notices: bool=True, calendar: bool=True, persistent: bool=True, check_login: bool=False, persistent_dir: str=None, timeout=5000):
     """
     Function to scrape Sentral
         
@@ -38,6 +38,7 @@ def sentralify(config: dict, headless: bool=True, timetable: bool=True, notices:
         calendar (bool = True): Whether or not to scrape the calendar
         persistent (bool = True): Whether or not to make the browser instance consistent pros: makes logging in faster, cons: stores data on computer
         check_login (bool = True): Used to check only if login is valid, returns bool, not dict
+        persistent_dir (str = None): The path to the persistent browser context
         timeout (int = 5000): The timeout for the scraper, in milliseconds. Default is 5 seconds.
 
     Returns:
@@ -66,7 +67,7 @@ def sentralify(config: dict, headless: bool=True, timetable: bool=True, notices:
     if check_login: persistent = False
     
     if persistent: # If this should be a persistent browser context, then launch it as persistent, otherwise launch in incognito mode
-        browser = p.chromium.launch_persistent_context(f"contexts/{config['username']}", headless=hdl)
+        browser = p.chromium.launch_persistent_context(persistent_dir, headless=hdl)
     else:
         browser = p.chromium.launch(headless=hdl)
     
