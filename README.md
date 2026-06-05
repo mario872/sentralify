@@ -3,7 +3,7 @@ Scrape Sentral data and use it!
 
 A Web Interface to the data scraped by Sentralify can be found [here](https://jimmyscompany.top).
 
-Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** package developed by J-J-B-J and SuperHarmony910.
+Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** library developed by J-J-B-J and SuperHarmony910.
 Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Timetable
  - ICS Timetable
@@ -15,8 +15,7 @@ Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Classes
  - Student Details such as name, student id etc.
 
-A quick sample to feed your coding addicted brain, so you can get started quickly:
-
+Example code:
 ```python
 from sentralify import sentralify
 
@@ -36,18 +35,15 @@ print(f"Student Details (awards, attendance, classes etc): {data['student_detail
 print(f"It took: {data['time_elapsed']} seconds to scrape that data from Sentral, and format it!")
 ```
 
-This is rather impressive, and if you want to know more about how to use it, then you can have a look at the documentation below.
-
 Sentralify has plans to add lots more features, such as:
  - Incidents scraping
  - Downloading reports
  - Downloading attachments from notices and activities
  - Downloading files from the school resources page
- - Generating barcode for use in library (idea from get-sentral)
 
 ## Documentation
-sentralify is quite simple from the user's perspective, all you have to do is call `sentralify(config)`, and it will magically scrape sentral for you and give you all the data you could ever want.
-If you want to understand in more detail how this works, then read on!
+sentralify has just one funtion, `sentralify(config)`. It will magically scrape Sentral for you and give you all the data you could ever want.
+For more details, read on.
 
 ### sentralify()
 `sentralify()` needs only 1 argument but accepts a total of 9. These arguments are `config, headless, timetable, notices, calendar, persistent, check_login, persistent_dir, timeout`; the last 8 are optional, and will all be `True` if not disabled, except for `check_login` which will be `False`. `timeout` will be 5000 (5 seconds) by default, `persistent_dir` will be `None` but **needs** to be set if you set `persistent` to `True` (as is default). `config` is required, and accepts a python dictioary formatted as follows:
@@ -60,7 +56,7 @@ config = {"username": "your_username",
           }
 ```
 
-`headless` in the arguments, will dictate, whether a chromium window opens, or whether it does it all invisibly. `timetable, notices, calendar` are all pretty self-explanatory, if you enable them, then sentralify, will scrape the selected web pages, and format their output. `persistent` makes sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
+`headless` in the arguments, will dictate, whether a chromium window opens, or whether it does it all invisibly. `timetable, notices, calendar` are all pretty self-explanatory, if you enable them, then Sentralify, will scrape the selected web pages, and format their output. `persistent` makes Sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
 
 `check_login` added in v1.1.0 is used to check the user's login, ie. check if they spelled their password and email correctly, if used, it will return a value of `True` or `False`.
 
@@ -224,7 +220,6 @@ Below is the general structure of one day, in one week that timetable returns:
 ]
 
 ```
-Yes, that is actually my timetable for one day, no I am not in year 13, no I am not telling you what year I am in.
 The general gist of how sentralify returns your timetable is 14 dictionaries in a list, each containing the date, and another list of 11 periods, with various values shown above. In each day, it also incudes the `"is_today"` key, which indicated whether the data was pulled from the cyclical timetable (False), or the daily timetable (True). If you wanted to access Period 1's room for example, you would run `sentralify(config)['timetable'][0]['periods'][1]['room']`
 
 #### Notices
@@ -235,17 +230,15 @@ Below is an example of one notice that it returns:
     {
         'title': 'Volleyball Team Trials',
         'date': "Mon Feb 12 00:00:00 2024",
-        'author': 'teacher_name',
+        'author': 'Mr. Smith',
         'content': 'Any students interested in trialing for the Open Boys or the Open Girls Volleyball Teams, can you please register your name outside the B Block staffroom.\xa0  \n  \nThe Open Boys Trial will be held Monday 19/2/24, prior to school starting at 7:15 am. Doors will be closed at 7:30 so please be prompt.  \n  \nThe Open Girls will be held Monday 19/2/24, after school until 4:30 pm.\xa0  \n  \nIf you are interested but cannot attend the trial sessions please indicate on the sign on sheet.  \n  \nThere will also be beginner/development squads running in the near future. If you are interested please sign on the beginner squad register.\n\n'
     }
 ]
 ```
-Yes, if you're the teacher that posted this who is reading this, then I can take it down if you want me to, no I will not bother asking for verification if it is really you, yes I will just make up a notice about school ending 5 weeks before the summer holidays, and this is definitely official.
-Also, if you are that teacher, and I think I remember who that teacher is a year later, man, you are a great teacher. I loved having you for Science.
-The general gist of how sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run `sentralify(config)['notices'][0]['author']`
+The general gist of how Sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run `sentralify(config)['notices'][0]['author']`
 
 #### Calendar
-The events from the school calendar that sentralify returns can be accessed by using `sentralify(config)['calendar']`
+The events from the school calendar that Sentralify returns can be accessed by using `sentralify(config)['calendar']`
 Below is an example of one events that it returns:
 ```python
 [
@@ -258,30 +251,29 @@ Below is an example of one events that it returns:
 ]
 ```
 
-Yes, I'm tired of writing this dcoumentation, no I will not stop prematurely.
-The general gist of how sentralify returns your celendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's date, then you would run `sentralify(config)['calendar'][0]['date']`. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
+The general gist of how Sentralify returns your calendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's date, then you would run `sentralify(config)['calendar'][0]['date']`. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
 
 #### Student Details
 Okay, this one is not as structured as the others, because it's a big collection of other details about the student, so I'm just gonna copy-past my one over, and censor my personal details.
 ```python
 {
-    "student_id": not_telling_you_bt_its_an_int,
-    "first_name": "mario872",
-    "surname": "I_have_no_surname",
-    "name": "mario872 I_have_no_surname",
-    "school_year": 13,
-    "rollclass": {"name": "13R1", "teacher": ""},
+    "student_id": 1234,
+    "first_name": "John",
+    "surname": "Smith",
+    "name": "John Smith",
+    "school_year": 12,
+    "rollclass": {"name": "12R1", "teacher": ""},
     "classes": [
-        {"name": "13ART13", "subject": None, "teacher": "not_telling_you"},
-        {"name": "13TEC13I", "subject": None, "teacher": None},
-        {"name": "13MUSY", "subject": None, "teacher": "still_not"},
-        {"name": "13ENGY", "subject": None, "teacher": None},
-        {"name": "13GEOY", "subject": None, "teacher": "I_will_not_tell_you"},
-        {"name": "13LAY", "subject": None, "teacher": None},
-        {"name": "13MATG", "subject": None, "teacher": "the_answers_still_no"},
-        {"name": "13GIFTY", "subject": None, "teacher": "oh_this_was_actually_one_of_my_favourite_teahcers_too_bad_I_wont_tell_you_who"},
-        {"name": "13PDHY", "subject": None, "teacher": None},
-        {"name": "13SCIY", "subject": None, "teacher": "this_teacher_is_also_pretty_cool"},
+        {"name": "12ART13", "subject": None, "teacher": "Mr. Smith"},
+        {"name": "12TEC13I", "subject": None, "teacher": "Mr. Doe"},
+        {"name": "12MUSY", "subject": None, "teacher": "Mrs. J Doe"},
+        {"name": "12ENGY", "subject": None, "teacher": None},
+        {"name": "12GEOY", "subject": None, "teacher": "Mr. M Man"},
+        {"name": "12LAY", "subject": None, "teacher": None},
+        {"name": "12MATG", "subject": None, "teacher": "Mr. PARR"},
+        {"name": "12GIFTY", "subject": None, "teacher": "Ms. E Staples"},
+        {"name": "12PDHY", "subject": None, "teacher": None},
+        {"name": "12SCIY", "subject": None, "teacher": "Mr. A Go"},
         {"name": "Bowling01", "subject": None, "teacher": None},
     ],
     "attendance": None, # See the snippet after this explainer
@@ -327,12 +319,10 @@ Okay, this one is not as structured as the others, because it's a big collection
 }
 
 ```
-Yes I'm doing Bowling for sport, yes all my friends are doing it too, yes, I'm a coder, so no, I do not like doing proper sport.
 This is a lot of data, but having it nicely formatted and laid out here, should make it easier to understand. If I wanted to access the third class's teacher, then I would use `sentralify(config)['student_details']['classes'][2]['teacher']`
 
 #### Attendance
-Okay, the attendance (added in v1.2.0) is really long, but I did it for you, you're welcome!
-Below is a small snippet of one day of data
+The attendance (added in v1.2.0) is really long, below is a small snippet of one day of data.
 ```python
 [
     [
@@ -353,10 +343,3 @@ If you, for example, wanted to import your timetable into your calendar, then yo
 This is how you can, for whatever reason, access your timetable in an ICS format using Sentralify.
 To parse the ICS data in python, you can use the [ics PyPi library](https://pypi.org/project/ics/).
 To access the ICS data use: `sentralify(config)['ics']`
-
-### That's all folks!
-That's all of my documentation for now, I think I've covered everything, now it's up to you to take this project places!
-
-
-#### Why this doesn't use get-sentral's license
-I didn't use get-sentral's license, because although the idea for me to make this came from their archiving of get-sentral, I used no code from get-sentral, and implemented and researched all of the code myself. So, in my opinion this was made from the ground up, and I did not ['remix, transform, and build upon the material'](https://creativecommons.org/licenses/by-nc-sa/4.0/) provided by get-sentral.
