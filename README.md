@@ -19,15 +19,16 @@ Example code:
 ```python
 from sentralify import sentralify
 
-config = {"username": "your_username",
-          "password": "your_password",
-          "base_url": "base_url_here_eg_caringbahhs",
-          "state": "your_state_here_eg_nsw"
-          }
+config = {
+    "username": "your_username",
+    "password": "your_password",
+    "base_url": "base_url_here_eg_caringbahhs",
+    "state": "your_state_here_eg_nsw"
+}
 
 data = sentralify(config, headless=False)
 
-# A LOT of data comes out of this sentralify function, get ready!
+# A LOT of data comes out of this sentralify function
 print(f"Timetable: {data['timetable']}")
 print(f"Notices: {data['notices']}")
 print(f"Calendar Events: {data['calendar']}")
