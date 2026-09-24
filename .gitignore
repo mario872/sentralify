@@ -154,3 +154,4 @@ contexts
 main.py
 .vscode/settings.json
 sentralify_data
+.DS_Store
