@@ -6,7 +6,7 @@ from sentralify import Sentralify
 import json
 
 
-sentralify = Sentralify("james.glynn", "poop", "caringbahhs", "nsw", headless=False, persistent=True)
+sentralify = Sentralify("username", "password", "caringbahhs", "nsw", headless=False, persistent=True)
 
 # print(sentralify.verify_login()) # Check if the login credentials are valid, and print the result
 
