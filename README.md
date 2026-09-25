@@ -1,15 +1,20 @@
-# sentralify
+# Sentralify
 Scrape Sentral data and use it!
 
-A Web Interface to the data scraped by Sentralify can be found [here](https://jimmyscompany.top).
+## Version 2.0
 
-Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/J-J-B-J/get-sentral) a ***fantastic*** library developed by J-J-B-J and SuperHarmony910.
+Version 2.0 introduces the `Sentralify` client class. The former
+`sentralify(config, ...)` function and configuration dictionary are no longer
+part of the public API.
+
+Sentralify was designed to be an **unofficial** replacement for [get-sentral](https://github.com/ryftjet/get-sentral) a ***fantastic*** library developed by ryftjet and SuperHarmony910.
+
 Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
  - Timetable
  - ICS Timetable
  - Awards
  - Attendance
- - Activites
+ - Activities
  - Notices
  - Calendar
  - Classes
@@ -17,16 +22,25 @@ Sentralify can scrape data from the new Sentral frontend. So far it can scrape:
 
 Example code:
 ```python
-from sentralify import sentralify
+from sentralify import Sentralify
+import json
 
-config = {
-    "username": "your_username",
-    "password": "your_password",
-    "base_url": "base_url_here_eg_caringbahhs",
-    "state": "your_state_here_eg_nsw"
-}
+sentralify = Sentralify(
+    username="your.username",
+    password="your_password",
+    prefix="caringbahhs",
+    state="nsw",
+    headless=False,
+    persistent=True,
+)
 
-data = sentralify(config, headless=False)
+# Check credentials without scraping data.
+# print(sentrallify.verify_login())
+
+data = sentralify.sentralify(scrape_ics=True)
+
+with open("data.json", "w") as f:
+    json.dump(data, f, indent=4)
 
 # A LOT of data comes out of this sentralify function
 print(f"Timetable: {data['timetable']}")
@@ -43,26 +57,43 @@ Sentralify has plans to add lots more features, such as:
  - Downloading files from the school resources page
 
 ## Documentation
-sentralify has just one funtion, `sentralify(config)`. It will magically scrape Sentral for you and give you all the data you could ever want.
-For more details, read on.
+To use Sentralify, first instantiate the class with the user's details, then scrape the data.
 
-### sentralify()
-`sentralify()` needs only 1 argument but accepts a total of 9. These arguments are `config, headless, timetable, notices, calendar, persistent, check_login, persistent_dir, timeout`; the last 8 are optional, and will all be `True` if not disabled, except for `check_login` which will be `False`. `timeout` will be 5000 (5 seconds) by default, `persistent_dir` will be `None` but **needs** to be set if you set `persistent` to `True` (as is default). `config` is required, and accepts a python dictioary formatted as follows:
+### Create a client
+
+Create one `Sentralify` instance for a student's Sentral account:
 
 ```python
-config = {"username": "your_username",
-          "password": "your_password",
-          "base_url": "base_url_here_eg_caringbahhs",
-          "state": "your_state_here_must_be_abbreviation_eg_nsw"
-          }
+sentralify = Sentralify(
+    username="your.username",
+    password="your_password",
+    prefix="caringbahhs",
+    state="nsw",
+    headless=True,
+    persistent=False,
+    persistent_dir="sentralify_data",
+)
 ```
 
-`headless` in the arguments, will dictate, whether a chromium window opens, or whether it does it all invisibly. `timetable, notices, calendar` are all pretty self-explanatory, if you enable them, then Sentralify, will scrape the selected web pages, and format their output. `persistent` makes Sentralify open Sentral in a normal chromium window (as opposed to an incognito window), this makes it a lot faster after the first sign in, as Sentral can just use the cookies saved to the contexts folder, and not require you to sign in again. On average, incognito mode takes around 20 seconds each time, and (after the first login), persistent takes around 3-10 seconds.
+`prefix` is the portion before `.sentral.com.au` in the school's address, and
+`state` is the state's abbreviation (for example, `nsw`). `headless` controls
+whether Playwright shows a browser window. Set `persistent=True` to reuse a
+browser profile at `persistent_dir`; this can avoid signing in on later runs.
 
-`check_login` added in v1.1.0 is used to check the user's login, ie. check if they spelled their password and email correctly, if used, it will return a value of `True` or `False`.
+### `Sentralify.sentralify()`
 
-### sentralify() return data
-sentralify returns a lot of data! Below is a documentation of what it returns
+Call `sentralify.sentralify()` to scrape data. `scrape_timetable`,
+`scrape_notices`, and `scrape_calendar` default to `True`; set any to `False`
+to omit that collection. Set `scrape_ics=True` to include the timetable's ICS
+text in `data["ics"]`. `timeout` is in milliseconds and defaults to `5000`.
+
+Use `sentralify.verify_login(timeout=5000)` when only credential validation is
+needed. It returns `True` or `False`.
+
+### Return data
+
+`sentralify.sentralify()` returns a dictionary containing the requested collections,
+student details, and `time_elapsed`.
 
 ##### Timetable
 The timetable that sentralify returns can be accessed by using `sentralify(config)['timetable']`
@@ -221,12 +252,12 @@ Below is the general structure of one day, in one week that timetable returns:
 ]
 
 ```
-The general gist of how sentralify returns your timetable is 14 dictionaries in a list, each containing the date, and another list of 11 periods, with various values shown above. In each day, it also incudes the `"is_today"` key, which indicated whether the data was pulled from the cyclical timetable (False), or the daily timetable (True). If you wanted to access Period 1's room for example, you would run `sentralify(config)['timetable'][0]['periods'][1]['room']`
+The timetable is a list of ten school-day dictionaries (two weeks). Each day contains its date and a list of periods. The `"is_today"` key indicates whether Sentral identifies that day as today. To access Period 1's room, use `data['timetable'][0]['periods'][1]['room']`.
 
 #### Notices
-The notices that sentralify returns can be accessed by using `sentralify(config)['notices']`
+The notices returned by Sentralify are available at `data['notices']`.
 Below is an example of one notice that it returns:
-```pyython
+```python
 [
     {
         'title': 'Volleyball Team Trials',
@@ -236,10 +267,10 @@ Below is an example of one notice that it returns:
     }
 ]
 ```
-The general gist of how Sentralify returns your notices is multiple dictionaries in a list, each containing the title, date, author, and content. The content is in markdown formatting, to retain the formatting that is added by teachers on Sentral. If you wanted to access the first notice's author, then you would run `sentralify(config)['notices'][0]['author']`
+Sentralify returns notices as dictionaries containing the title, date, author, and content. Content uses Markdown to retain teacher formatting. For example, access the first notice's author with `data['notices'][0]['author']`.
 
 #### Calendar
-The events from the school calendar that Sentralify returns can be accessed by using `sentralify(config)['calendar']`
+The school-calendar events are available at `data['calendar']`.
 Below is an example of one events that it returns:
 ```python
 [
@@ -252,7 +283,7 @@ Below is an example of one events that it returns:
 ]
 ```
 
-The general gist of how Sentralify returns your calendar is multiple dictionaries in a list, each containing the title, start, end, and date. If you wanted to access the first events's date, then you would run `sentralify(config)['calendar'][0]['date']`. Please note that not all events have the start and end fields filled out, as sometimes events just run all day instead.
+Sentralify returns calendar events as dictionaries containing title, start, end, and date. Access the first event's date with `data['calendar'][0]['date']`. All-day events have `None` for start and end.
 
 #### Student Details
 Okay, this one is not as structured as the others, because it's a big collection of other details about the student, so I'm just gonna copy-past my one over, and censor my personal details.
@@ -320,7 +351,7 @@ Okay, this one is not as structured as the others, because it's a big collection
 }
 
 ```
-This is a lot of data, but having it nicely formatted and laid out here, should make it easier to understand. If I wanted to access the third class's teacher, then I would use `sentralify(config)['student_details']['classes'][2]['teacher']`
+This is a lot of data, but having it nicely formatted and laid out here should make it easier to understand. To access the third class's teacher, use `data['student_details']['classes'][2]['teacher']`.
 
 #### Attendance
 The attendance (added in v1.2.0) is really long, below is a small snippet of one day of data.
@@ -337,10 +368,10 @@ The attendance (added in v1.2.0) is really long, below is a small snippet of one
     ]
 ]
 ```
-To get the your attendance status on the first day of the school year, you would call `sentralify(config)['student_details']['attendance'][0][0][0]['status']`. The three zeros are the term, the week number in the term, and the day of the week.
+To get the attendance status on the first day of the school year, call `data['student_details']['attendance'][0][0][0]['status']`. The three indexes are the term, week number in that term, and day of the week.
 
 #### ICS Timetable
 If you, for example, wanted to import your timetable into your calendar, then you would export your timetable as an ICS file, and import it into, say, Google Calendar.
 This is how you can, for whatever reason, access your timetable in an ICS format using Sentralify.
 To parse the ICS data in python, you can use the [ics PyPi library](https://pypi.org/project/ics/).
-To access the ICS data use: `sentralify(config)['ics']`
+Call `sentralify.sentralify(scrape_ics=True)` and access the ICS data with `data['ics']`.

@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sentralify"
-version = "1.0.0"
+version = "2.0.0"
 description = "Scrape Sentral data and use it!"
 readme = "README.md"
 authors = [{ name = "mario872", email = "jamesaglynn10@gmail.com" }]
 license = { file = "LICENSE" }
 classifiers = [
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]

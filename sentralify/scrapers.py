@@ -19,10 +19,13 @@ along with this program.  If not, see https://www.gnu.org/licenses/gpl-3.0.html.
 # Imports
 
 import json
+import logging
 import re
 from playwright.sync_api import Page, Browser, expect
 from bs4 import BeautifulSoup
 import os
+
+logger = logging.getLogger(__name__)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Main scrapers class
@@ -48,9 +51,9 @@ class scrapers:
             
             try:
                 page.goto(f"https://{self.config['prefix']}.sentral.com.au/portal?action=login_student") # Go to main Sentral v2 portal login page
-            except Exception as e:
-                print(Exception)
-                return False
+            except Exception as exc:
+                logger.exception("Could not open the Sentral login page")
+                raise ConnectionError("Could not open the Sentral login page") from exc
             
             #page.get_by_label("Email or Username*").fill(self.config['username'])
             #page.get_by_label("Password*").fill(self.config['password'])
@@ -58,7 +61,7 @@ class scrapers:
             
             try:
                 expect(page).to_have_title('Portal Login', timeout=1000)
-                print('After portal login')
+                logger.debug("Sentral portal login page displayed")
                 return False
             except AssertionError:
                 pass
@@ -83,12 +86,9 @@ class scrapers:
             except AssertionError:
                 return False
 
-        except Exception as e:
-            print('Uhoh! There\'s an error in check_login!')
-            print(e)
-            print(page.title)
-            #print(page.content())
-            exit()
+        except Exception as exc:
+            logger.exception("Could not verify Sentral login credentials")
+            raise RuntimeError("Could not verify Sentral login credentials") from exc
     
     def login(self, browser: Browser):
         """
@@ -101,6 +101,8 @@ class scrapers:
             playwright page: The current page / tab object the playwright is working in, for continuity between functions
         """
         
+        page = None
+
         try:
         
             page = browser.new_page()
@@ -117,7 +119,7 @@ class scrapers:
                         page.wait_for_timeout(100)
                 expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]} {self.config['username'].split('.')[1]}", re.IGNORECASE), timeout=self.timeout)
                 self.unique_path = page.url.split('/')[3] # Get the unique path from the page, so we can use it for all the other pages.
-                print("Done")
+                logger.debug("Reused an existing Sentral session")
                 return page
             except AssertionError: # Okay, we haven't logged in recently enough
                 pass
@@ -144,17 +146,16 @@ class scrapers:
             self.unique_path = page.url.split('/')[3] # Get the unique path from the page, so we can use it for all the other pages.
             return page
         
-        except Exception as e:
+        except Exception as exc:
             try:
+                if page is None:
+                    raise AssertionError
                 expect(page).to_have_title(re.compile(f"Portal - {self.config['username'].split('.')[0]}", re.IGNORECASE), timeout=1000)
                 self.unique_path = page.url.split('/')[3] # Get the unique path from the page, so we can use it for all the other pages.
                 return page
             except AssertionError:
-                print('Uhoh! There\'s an error in login!')
-                print(e)
-                print(page.title)
-                #print(page.content())
-                exit()
+                logger.exception("Could not log in to Sentral")
+                raise RuntimeError("Could not log in to Sentral") from exc
     
     def save_student_details(self, page: Page):
         """
@@ -236,7 +237,7 @@ class scrapers:
             html: The html content on the page
         """
         
-        ics_downloaded = False
+        last_error = None
         
         for i in range(3):
             try:
@@ -250,15 +251,13 @@ class scrapers:
                     timetable_ics_contents = timetable_ics.read()
                     
                 os.remove("timetable.ics")
-                ics_downloaded = True
-                break
-            except:
-                pass
-        if ics_downloaded:
-            return timetable_ics_contents
-        else:
-            print('Welp, looks like there is an error in scrapers.save_ics')
-            return None
+                return timetable_ics_contents
+            except Exception as exc:
+                last_error = exc
+                logger.debug("ICS download attempt %d failed", i + 1, exc_info=True)
+
+        logger.error("Could not download the Sentral timetable as an ICS file after three attempts")
+        raise RuntimeError("Could not download the Sentral timetable as an ICS file") from last_error
         
     def save_notices(self, page: Page):
         """
